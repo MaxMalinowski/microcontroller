@@ -1,2 +1,9 @@
+# User related files
 *.maxma
+
+# Project related files
 *.uvoptx
+*.uvprojx
+
+# Init files
+*.ini
