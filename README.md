@@ -9,4 +9,5 @@ Create and setup a Project using the Keil IDE.
 
 ## Ex. 2
 
+Let the green led blink with 1 Hz when the USER button is pressed.
 
