@@ -1,10 +1,13 @@
 #include "STM32F4xx.h"
 #include "_mcpr_stm32f407.h"
+#include "Blinky.h"
 
-int main (void) {
+
+//-----------------------------------------------------
+//MAIN
+//-----------------------------------------------------
+int main(void) {
 	mcpr_SetSystemCoreClock();
 	
-	while(1) {
-	
-	}
+	blinky_main();
 }
