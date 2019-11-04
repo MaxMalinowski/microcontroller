@@ -1,6 +1,7 @@
 #include "STM32F4xx.h"
 #include "_mcpr_stm32f407.h"
 #include "Blinky.h"
+#include "leds.h"
 
 
 //-----------------------------------------------------
@@ -9,5 +10,10 @@
 int main(void) {
 	mcpr_SetSystemCoreClock();
 	
-	blinky_main();
+	LEDs_InitPorts();
+	
+	while (1) 
+	{
+		leds_main();
+	}
 }

@@ -35,7 +35,7 @@ void blinky_main(void) {
 			//Wait 0.5 seconds
 			u_delay(500000);
 			// Turn of green led
-			GPIOD->ODR &= ~0xFFFEFFFF;
+			GPIOD->ODR &= ~0x00010000;
 			// Wait 0.5 seconds
 			u_delay(500000);
 		}
