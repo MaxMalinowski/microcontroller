@@ -1,8 +1,9 @@
-#include "Blinky.h"
+#include "blinky.h"
 #include "STM32F4xx.h"
 #include "_mcpr_stm32f407.h" 
 
-void led_port_init(void) {
+void led_port_init(void) 
+{
 	// Enable clock on gpio port d (bit 3)
 	RCC -> AHB1ENR |= 0x00000008;
 	// Set green led (port d, bit 12) as output
@@ -15,21 +16,21 @@ void led_port_init(void) {
 }
 
 
-void u_delay(int microsec) {
+void u_delay(int microsec) 
+{
 	int  zaehler =0;
-	while(zaehler != microsec * 27){
+	while(zaehler != microsec * 27)
+	{
 		zaehler++;
 	}
 }
 
 
-void blinky_main(void) {
-	// Init registers
-	led_port_init();
-	
-	while(1){
+void blinky_main(void) 
+{
 		// Check if user button is pushed
-		if (GPIOA -> IDR << 31 & 0xF0000000) {
+		if (GPIOA -> IDR << 31 & 0xF0000000)
+		{
 			// Turn on green led
 			GPIOD->ODR |= 0x00001000;
 			//Wait 0.5 seconds
@@ -39,5 +40,4 @@ void blinky_main(void) {
 			// Wait 0.5 seconds
 			u_delay(500000);
 		}
-	}
 }

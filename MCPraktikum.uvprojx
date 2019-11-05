@@ -393,14 +393,19 @@
               <FilePath>.\_mcpr_stm32f407.c</FilePath>
             </File>
             <File>
-              <FileName>Blinky.c</FileName>
+              <FileName>blinky.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Blinky.c</FilePath>
+              <FilePath>.\blinky.c</FilePath>
             </File>
             <File>
               <FileName>leds.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\leds.c</FilePath>
+            </File>
+            <File>
+              <FileName>display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\display.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -799,14 +804,19 @@
               <FilePath>.\_mcpr_stm32f407.c</FilePath>
             </File>
             <File>
-              <FileName>Blinky.c</FileName>
+              <FileName>blinky.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Blinky.c</FilePath>
+              <FilePath>.\blinky.c</FilePath>
             </File>
             <File>
               <FileName>leds.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\leds.c</FilePath>
+            </File>
+            <File>
+              <FileName>display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\display.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1343,14 +1353,19 @@
               <FilePath>.\_mcpr_stm32f407.c</FilePath>
             </File>
             <File>
-              <FileName>Blinky.c</FileName>
+              <FileName>blinky.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Blinky.c</FilePath>
+              <FilePath>.\blinky.c</FilePath>
             </File>
             <File>
               <FileName>leds.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\leds.c</FilePath>
+            </File>
+            <File>
+              <FileName>display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\display.c</FilePath>
             </File>
           </Files>
         </Group>

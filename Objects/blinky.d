@@ -1,5 +1,5 @@
-.\objects\blinky.o: Blinky.c
-.\objects\blinky.o: Blinky.h
+.\objects\blinky.o: blinky.c
+.\objects\blinky.o: blinky.h
 .\objects\blinky.o: C:\Users\maxma\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\STM32F4xx.h
 .\objects\blinky.o: C:\Users\maxma\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h
 .\objects\blinky.o: C:\Users\maxma\AppData\Local\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include\core_cm4.h
