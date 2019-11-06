@@ -2,7 +2,7 @@
 void LEDs_InitPorts(void);
 
 // Process 16 bit word 
-void LCD_Output16BitWord(uint16_t data);
+void LED_Output16BitWord(uint16_t data);
 
 // Write 16 bit word on data bus
 void LEDs_Write(uint16_t data);
