@@ -407,6 +407,11 @@
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
             </File>
+            <File>
+              <FileName>tastatur.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\tastatur.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -817,6 +822,11 @@
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
+            </File>
+            <File>
+              <FileName>tastatur.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\tastatur.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1366,6 +1376,11 @@
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
+            </File>
+            <File>
+              <FileName>tastatur.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\tastatur.c</FilePath>
             </File>
           </Files>
         </Group>
