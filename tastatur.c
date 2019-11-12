@@ -2,38 +2,34 @@
 #include "_mcpr_stm32f407.h" 
 #include "tastatur.h"
 #include "display.h"
-//#include "fonts.h"
 #include "inttypes.h"
 
 
 void Tastatur_Init(void) 
 {
-	RCC -> AHB1ENR |= 0x00000003;		// Turn on Clock for GPIOA and GPIOB 
-	//nothing for GPIOA, because it is input
-	GPIOB -> MODER &= 0x00000030;   // problem with reset values
-	GPIOB -> MODER |= 0x00005500;		// GPIOB 4-7 are outputs
-	
+	RCC -> AHB1ENR |= 0x00000003;	// Enable Clock for GPIOA and GPIOB
+	GPIOB -> MODER &= 0x00000030;   // Clear reset values
+	GPIOB -> MODER |= 0x00005500;	// GPIOB 4-7 are outputs
 	GPIOB -> OTYPER |= 0x000000F0;	// Set output type to open-drain
-	GPIOA -> PUPDR |= 0x00001540;		//Set inputs to pull-up
-
+	GPIOA -> PUPDR |= 0x00001540;	// Set inputs to pull-up
 }
+
 
 uint16_t Tastatur_Read(void)
 {
-	int i=0;
-	int x =0;
-	int start =0;
-	uint16_t res =0x0;
-	for(i=0; i<4;i++){
-		GPIOB -> ODR &= 0xFF0F; 
-		GPIOB -> ODR |= (~(0x1<<(i+4)))&0xF0;	 //low at one Port
-		
+	uint8_t i, x, start = 0;
+	uint16_t res = 0x0000;
+
+	for(i = 0; i < 4; i++)
+	{
+		GPIOB -> ODR &= 0xFF0F;                 // all outputs high
+		GPIOB -> ODR |= ~(0x10 << i) & 0xF0;	// set one port, equals one line low
 		start = i*4;
-		for(x=0; x<4;x++)
+		for(x = 0; x < 4; x++)
 		{
-			if((0x1<<(3+x))& GPIOA-> IDR == 0x0)
+			if((0x08 << x) & GPIOA -> IDR == 0x0)
 			{
-				res |= (0x1<<start);
+				res |= (0x1 << start);
 				start++;				
 			}				
 		}	
@@ -45,11 +41,11 @@ char* Short2Bitstring(uint16_t tasten)
 {
 	char array[17];
 	char* res;
-	int i=0;
+	int i = 0;
 	
-	for(i=0; i<16;i++)
+	for(i = 0; i < 16; i++)
 	{
-		if((0x1<<i)& tasten == 0x1)
+		if((0x1 << i) & tasten == 0x1)
 		{
 			array[i] = '1';	
 		}
@@ -59,19 +55,19 @@ char* Short2Bitstring(uint16_t tasten)
 		}	
 	}
 	array[16] = '\0';
-	res = &array;
-	
-	return res;
+	return &array;
 }
 
+// Function to detect, if key was just pressed or released
+
 void Tastatur_Main(void) {
-	uint16_t colorbg = 0xF800; 		// background red
-	uint16_t colorfg;							// foreground
+	uint16_t colorbg = 0xF800; 		    // background red
+	uint16_t colorfg;					// foreground
 	while(1) {
 		GPIOD->ODR ^= 0x1000; 			// toggle PD12 (green LED)
-		LCD_ClearDisplay(colorbg); 	// clear Display
+		LCD_ClearDisplay(colorbg); 	    // clear Display
 		LCD_WriteString(220, 220, colorfg, colorbg, "Hallo Welt!");
-		colorfg = colorbg;					// Foreground = Background
-		colorbg = ~colorbg;					// Backgound = ~Backgound
+		colorfg = colorbg;				// Foreground = Background
+		colorbg = ~colorbg;				// Backgound = ~Backgound
 	}
 }
