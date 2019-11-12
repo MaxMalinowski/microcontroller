@@ -23,28 +23,21 @@ uint16_t Tastatur_Read(void)
 	int i=0;
 	int x =0;
 	int start =0;
-	uint16_t res =0;
+	uint16_t res =0x0;
 	for(i=0; i<4;i++){
-		GPIOB -> ODR = ~0x1<<(i+4);	 //low at one Port
+		GPIOB -> ODR = ~(0x1<<(i+4));	 //low at one Port
 		GPIOB -> ODR &= 0xF0;  //set all other pins to 0
 		
 		start = i*4;
 		for(x=0; x<4;x++)
 		{
-				res = GPIOA -> IDR ;  //ich bin müde und blick nimma durch.
-			//hier soll der ganze kack so verschoben werden, dass mit bitoperationen
-			//alles direkt in die variable geschoben wird. 
-			//vielleicht kapier ichs ja morgen 
-			
-			
-		}
-		
-		
-		
-	}
-	
-	
-	
+			if((0x1<<(3+x))& GPIOA-> IDR == 0x0)
+			{
+				res |= (0x1<<start);
+				start++;				
+			}				
+		}	
+	}	
 	return res;
 }
 
