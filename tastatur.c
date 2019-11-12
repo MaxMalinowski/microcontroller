@@ -25,8 +25,8 @@ uint16_t Tastatur_Read(void)
 	int start =0;
 	uint16_t res =0x0;
 	for(i=0; i<4;i++){
-		GPIOB -> ODR = ~(0x1<<(i+4));	 //low at one Port
-		GPIOB -> ODR &= 0xF0;  //set all other pins to 0
+		GPIOB -> ODR &= 0xFF0F; 
+		GPIOB -> ODR |= (~(0x1<<(i+4)))&0xF0;	 //low at one Port
 		
 		start = i*4;
 		for(x=0; x<4;x++)
@@ -41,11 +41,28 @@ uint16_t Tastatur_Read(void)
 	return res;
 }
 
-/*char[] Short2Bitstring(uint16_t tasten)
+char* Short2Bitstring(uint16_t tasten)
 {
+	char array[17];
+	char* res;
+	int i=0;
 	
-	return 0;
-}*/
+	for(i=0; i<16;i++)
+	{
+		if((0x1<<i)& tasten == 0x1)
+		{
+			array[i] = '1';	
+		}
+		else
+		{
+			array[i] = '0';	
+		}	
+	}
+	array[16] = '\0';
+	res = &array;
+	
+	return res;
+}
 
 void Tastatur_Main(void) {
 	uint16_t colorbg = 0xF800; 		// background red
