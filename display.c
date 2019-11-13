@@ -180,6 +180,9 @@ void LCD_WriteString(uint32_t x, uint32_t y, uint16_t foreground, uint16_t backg
 
 
 void LCD_Main(void) {
+	LCD_PortInit();
+	LCD_Init();
+	
 	uint16_t colorbg = 0xF800; 		// background red
 	uint16_t colorfg;							// foreground
 	while(1) {

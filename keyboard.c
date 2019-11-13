@@ -24,30 +24,73 @@ uint16_t keyboard_Read(void)
 	{
 		GPIOB -> ODR |= 0x00F0;        	// all outputs (B4-7) high
 		GPIOB -> ODR &= ~(0x0010 << i);	// set one port, equals one line low
-		res |= (((0x0078 & GPIOA -> IDR) >> 3) << (i * 4)); 	// Check input	
+		LCD_Delay(20);
+
+		res |= (((0x0078 & ~(GPIOA -> IDR)) >> 3) << (i * 4)); 	// Check input	
+	
 	}	
 	return res;
 }
 
 
-char* Short2Bitstring(uint16_t keys)
+void Short2Bitstring(uint16_t keys, char* array)
 {
-	char array[17];
-	char* res;
-	uint8_t i = 0;
+	uint16_t i = 0;
 	
 	for(i = 0; i < 16; i++)
 	{
-		if(((0x0001 << i) & keys) == (0x0001 << i))
+		if(((0x0001 << i) & keys))
 		{
-			array[i] = '1';	
+			array[15-i] = '1';	
 		}
 		else
 		{
-			array[i] = '0';	
+			array[15-i] = '0';	
 		}	
 	}
 	array[16] = '\0';
-	res = array;
-	return res;
 }
+
+void Keyboard_Main()
+{
+	LCD_PortInit();
+	LCD_Init();
+	keyboard_Init();
+	
+	uint16_t old_key = 0;
+	uint16_t new_key = 0;
+	char keyboard[17];
+	LCD_ClearDisplay(0xFFFF);
+
+	while(1)
+	{
+		old_key = new_key;
+		new_key = keyboard_Read();
+		
+		Short2Bitstring(new_key, keyboard);
+		LCD_WriteString(20, 20, 0x0000, 0xFFFF, keyboard);
+		
+		if (old_key != new_key)
+		{
+			if (~old_key & (old_key ^ new_key))
+			{
+				if(0x00FF & new_key)
+				{
+					GPIOD->ODR ^= 0x1000;
+				}
+			}
+			else 
+			{
+				if(0xFF00 & old_key)
+				{
+					GPIOD->ODR ^= 0x1000;
+				}					
+			}
+		}
+	}
+}
+
+
+
+
+
