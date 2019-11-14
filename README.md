@@ -21,7 +21,7 @@ Trigger the display to print out strings and letters or to clean the display
 
 ## Ex. 5
 
-Read the inputs of the tastatur 
+Read the inputs of the keyboard
 
 
 
