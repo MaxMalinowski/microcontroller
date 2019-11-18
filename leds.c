@@ -45,13 +45,14 @@ void LEDs_delay(int microsec)
 
 void leds_main(void)
 { 
-	for (int i = 0; i < 16; i++) 
+	int i=0;
+	for (i = 0; i < 16; i++) 
 	{
 		LEDs_Write((uint16_t) pow(2, i));
 		LEDs_delay(1000000);
 	}
 	LEDs_Write(0xFFFF);
-	for (int i = 0; i < 16; i++) 
+	for (i = 0; i < 16; i++) 
 	{
 		LEDs_Write(~(uint16_t) pow(2, i));
 		LEDs_delay(1000000);

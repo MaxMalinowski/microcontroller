@@ -6,4 +6,5 @@ void keyboard_Init(void);
 
 void Short2Bitstring(uint16_t keys, char* array);
 
-void Keyboard_Main();
+void Keyboard_Main(void);
+

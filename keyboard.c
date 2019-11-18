@@ -51,7 +51,7 @@ void Short2Bitstring(uint16_t keys, char* array)
 	array[16] = '\0';
 }
 
-void Keyboard_Main()
+void Keyboard_Main(void)
 {
 	LCD_PortInit();
 	LCD_Init();

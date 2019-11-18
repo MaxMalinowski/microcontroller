@@ -179,7 +179,7 @@ void LCD_WriteString(uint32_t x, uint32_t y, uint16_t foreground, uint16_t backg
 }
 
 
-void LCD_Main(void) {
+void LCD_Main() {
 	LCD_PortInit();
 	LCD_Init();
 	
