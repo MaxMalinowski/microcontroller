@@ -7,6 +7,20 @@
 
 void Timer_Init(void) 
 {
+	//init GPIO
+	
+	
+	
+	
+	
+	RCC -> APB1ENR |= 0x00000020;	//Enable Timer 7
+	TIM7-> PSC |= 0x00000014;			//prescaler to 20
+	TIM7 -> ARR |= 0x00000FA0;		// auto-reload register to 4000
+	
+	
+	TIM7->DIER |=0x00000001;		//ENABLE interrupt
+	TIM7->CR1 |=0x00000001;		//enable counter
+	
 	/*RCC -> AHB1ENR |= 0x00000003;		// Enable Clock for GPIOA and GPIOB
 	GPIOB -> MODER &= 0x00000030;   // Clear reset values
 	GPIOB -> MODER |= 0x00005500;		// GPIOB 4-7 are outputs
