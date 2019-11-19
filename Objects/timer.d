@@ -12,3 +12,4 @@
 .\objects\timer.o: keyboard.h
 .\objects\timer.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
 .\objects\timer.o: display.h
+.\objects\timer.o: timer.h
