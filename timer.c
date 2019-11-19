@@ -1,5 +1,6 @@
 #include "STM32F4xx.h"
-#include "_mcpr_stm32f407.h" 
+#include "_mcpr_stm32f407.h"
+#include "Blinky.h"
 #include "keyboard.h"
 #include "display.h"
 #include "timer.h"
@@ -12,24 +13,24 @@ volatile uint32_t greenTime = 0;
 volatile uint32_t backgroundTime = 0;
 
 volatile uint8_t greenOn = 0;
-volatile uint8_t backgroundOn = 0;
-volatile uint8_t UserOn = 0;
+volatile uint8_t userOn = 0;
 
 
 void Timer_Init(void) 
 {
-	//GPIOA for user button and GPIOD for green led and backlight of display
-	RCC 	-> AHB1ENR|= 0x00000009;	// Turn on Clock for GPIOD and GPIOA
-	GPIOD -> MODER 	|=0x05000000;		//PD13 is an output and PD12 for green led
-	GPIOD -> ODR 		|= 0x2000;			//PD13 is on, PD12 off
-	
-	
+	// Init keyboard, display, led, user button
+	led_port_init();
+	LCD_PortInit();
+	LCD_Init();
+	Keyboard_Init();
+
 	RCC -> APB1ENR |= 0x00000020;	// enable Timer 7
 	TIM7 -> PSC |= 0x00000014;		// set prescaler to 20
 	TIM7 -> ARR |= 0x00000F9F;		// set auto-reload register to 3999
-	TIM7 -> DIER |=0x00000001;		// enable interrupt
-	TIM7 -> CR1 |=0x00000001;		// enable counter
+	TIM7 -> DIER |= 0x00000001;		// enable interrupt
+	TIM7 -> CR1 |= 0x00000001;		// enable counter
 }
+
 
 void TIM7_IRQHandler()
 {
@@ -37,90 +38,105 @@ void TIM7_IRQHandler()
     milliSec++;
 }
 
-void LED(void)
-{
-	if(greenOn)
-	{
-		greenTime += milliSec;
-	}
-	else if((GPIOA -> IDR << 31 & 0xF0000000))
-	{
-		greenOn = 1;
-		GPIOD -> ODR |= 0x00001000;		//green led on
-	}
-	
-	if(greenTime >= 10000)
-	{
-		greenOn = 0;
-		greenTime = 0;
-		GPIOD -> ODR &= ~(0x00001000);		//green led out
-	}
 
+void check_LED(void)
+{
+	if(GPIOD -> ODR & 0x00001000)
+	{
+	    if (!greenOn)
+        {
+	        greenTime = milliSec;
+	        greenOn = 1;
+        }
+
+	    if (milliSec > (greenTime++ + 10000))
+        {
+	        GPIOD -> ODR &= 0x00001000;
+	        greenOn = 0;
+        }
+	}
 }
 
-void Background(void)
-{	
-	if((GPIOA -> IDR << 31 & 0xF0000000))
-	{
-		greenTime += milliSec;
 
-		if(backgroundOn)
-		{
-			if(greenTime >=1000)
-			{
-				backgroundOn = 0;
-				GPIOD->ODR &= ~0x00020000;	// Turn off background
-				greenTime = 0;
-			}
-		}
-		else
-		{
-			if(greenTime >=1000)
-			{
-				backgroundOn = 1;
-				GPIOD -> ODR |= 0x00020000; //Turn on background
-				greenTime = 0;
-			}
-		}
-			
+void check_Background(void)
+{	
+	if((GPIOA -> IDR << 31) & 0xF0000000)
+	{
+	    if (!userOn)
+	    {
+	        backgroundTime = milliSec;  // If user button just pressed get time
+	        userOn = 1;                 // To no reset press-time
+	    }
+
+	    if (milliSec > (backgroundTime++ + 1000))   // check time and add
+        {
+            GPIOD->ODR ^= 0x00020000;	// Toggle background
+            background = milliSec;      // reset time to new
+        }
 	}
 	else
 	{
-		backgroundOn = 1;
-		GPIOD->ODR |= 0x00002000;  //turn on background
-		greenTime = 0;
+	    userOn = 0;
+		GPIOD->ODR |= 0x00002000;       //turn on background
 	}
 }
-
-void Reset_Timer_Main(void)
-{
-	
-	//reset the mainTime and milliseconds
-	
-}
-
-
-
 
 
 void Timer_Main(void)
 {
     Timer_Init();
 
+    // Keyboard variables
+    uint16_t old_key = 0;
+    uint16_t new_key = 0;
+    char keyboard[17];
+    LCD_ClearDisplay(0xFFFF);
+
 	while(1)
 	{
-	    // check times and if time bigger than treshhold, take action
-			mainTime = 0;
-			LED();
-			Background();
-				
-		while(milliSec<50)
+	    mainTime = milliSec;
+
+	    // Keyboard Main stuff
+        old_key = new_key;
+        new_key = keyboard_Read();
+
+        Short2Bitstring(new_key, keyboard);
+        LCD_WriteString(20, 20, 0x0000, 0xFFFF, keyboard);
+
+        if (old_key != new_key)
+        {
+            if (~old_key & (old_key ^ new_key))
+            {
+                if(0x00FF & new_key)
+                {
+                    GPIOD->ODR ^= 0x1000;
+                }
+            }
+            else
+            {
+                if(0xFF00 & old_key)
+                {
+                    GPIOD->ODR ^= 0x1000;
+                }
+            }
+        }
+
+	    // Check if green led is on
+	        // If on, check how long
+	        // > 10s, turn of
+        check_LED();
+
+	    // Check if user button is pressed
+            // If button pressed, check time > 1s
+            // Toggle, if over threshold
+        check_Background();
+
+        // Wait, if duration of main loop < 50ms
+		while(milliSec < (mainTime + 50))
 		{
 			//do nothing and wait until time is over
 		}
-		mainTime = 0;
 	}
-	
 }
 
 
