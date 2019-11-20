@@ -43,9 +43,9 @@ void check_LED(void)
 	        greenOn = 1;                            // mark led as on
         }
 
-	    if (milliSec > (greenTime++ + 10000))       // Check time and add; if time threshold enter if
+	    if (milliSec > (greenTime + 10000))         // Check time and add; if time threshold enter if
         {
-	        GPIOD -> ODR &= 0x00001000;             // turn of led
+	        GPIOD -> ODR &= ~0x00001000;             // turn of led
 	        greenTime = milliSec;                   // set time to current for further checks
         }
 	}
@@ -66,7 +66,7 @@ void check_Background(void)
 	        userOn = 1;                             // mark user button as pressed
 	    }
 
-	    if (milliSec > (backgroundTime++ + 1000))   // check time and add; if time threshold enter if
+	    if (milliSec > (backgroundTime + 1000))     // check time and add; if time threshold enter if
         {
             GPIOD->ODR ^= 0x00020000;	            // Toggle background (tun on if off, turn off if on)
             background = milliSec;                  // set time to current for further checks
