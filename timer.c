@@ -18,11 +18,13 @@ volatile uint8_t userOn = 0;
 
 void Timer_Init(void) 
 {
-	RCC -> APB1ENR |= 0x00000020;	// enable Timer 7
-	TIM7 -> PSC |= 0x00000014;		// set prescaler to 20
-	TIM7 -> ARR |= 0x00000F9F;		// set auto-reload register to 3999
-	TIM7 -> DIER |= 0x00000001;		// enable interrupt
-	TIM7 -> CR1 |= 0x00000001;		// enable counter
+	RCC -> APB1ENR |= 0x00000020;	        // enable Timer 7
+	TIM7 -> PSC |= 0x00000014;		        // set prescaler to 20
+	TIM7 -> ARR |= 0x00000F9F;		        // set auto-reload register to 3999
+	TIM7 -> DIER |= 0x00000001;		        // enable interrupt
+	NVIC_SetPriority(TIM7_IRQhandler, 0);   // set interrupt priority
+	NVIC_EnableIRQ(TIM7_IRQHandler);        // enable interrupt in nvic
+	TIM7 -> CR1 |= 0x00000001;		        // enable counter
 }
 
 
