@@ -51,6 +51,30 @@ void Short2Bitstring(uint16_t keys, char* array)
 	array[16] = '\0';
 }
 
+void Keyboard_Check(uint16_t old_key, uint16_t new_key, char* keyboard)
+{
+    Short2Bitstring(new_key, keyboard);
+    LCD_WriteString(20, 20, 0x0000, 0xFFFF, keyboard);
+
+    if (old_key != new_key)
+    {
+        if (~old_key & (old_key ^ new_key))
+        {
+            if(0x00FF & new_key)
+            {
+                GPIOD->ODR ^= 0x1000;
+            }
+        }
+        else
+        {
+            if(0xFF00 & old_key)
+            {
+                GPIOD->ODR ^= 0x1000;
+            }
+        }
+    }
+}
+
 void Keyboard_Main(void)
 {
 	LCD_PortInit();
@@ -66,27 +90,9 @@ void Keyboard_Main(void)
 	{
 		old_key = new_key;
 		new_key = keyboard_Read();
-		
-		Short2Bitstring(new_key, keyboard);
-		LCD_WriteString(20, 20, 0x0000, 0xFFFF, keyboard);
-		
-		if (old_key != new_key)
-		{
-			if (~old_key & (old_key ^ new_key))
-			{
-				if(0x00FF & new_key)
-				{
-					GPIOD->ODR ^= 0x1000;
-				}
-			}
-			else 
-			{
-				if(0xFF00 & old_key)
-				{
-					GPIOD->ODR ^= 0x1000;
-				}					
-			}
-		}
+
+		Keyboard_Check(old_key, new_key, keyboard);
+
 	}
 }
 

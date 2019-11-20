@@ -18,12 +18,6 @@ volatile uint8_t userOn = 0;
 
 void Timer_Init(void) 
 {
-	// Init keyboard, display, led, user button
-	led_port_init();
-	LCD_PortInit();
-	LCD_Init();
-	Keyboard_Init();
-
 	RCC -> APB1ENR |= 0x00000020;	// enable Timer 7
 	TIM7 -> PSC |= 0x00000014;		// set prescaler to 20
 	TIM7 -> ARR |= 0x00000F9F;		// set auto-reload register to 3999
@@ -41,105 +35,78 @@ void TIM7_IRQHandler()
 
 void check_LED(void)
 {
-	if(GPIOD -> ODR & 0x00001000)
+	if(GPIOD -> ODR & 0x00001000)                   // check if green led is on (from keyboard)
 	{
-	    if (!greenOn)
+	    if (!greenOn)                               // Check if led was just turned on
         {
-	        greenTime = milliSec;
-	        greenOn = 1;
+	        greenTime = milliSec;                   // get the current time
+	        greenOn = 1;                            // mark led as on
         }
 
-	    if (milliSec > (greenTime++ + 10000))
+	    if (milliSec > (greenTime++ + 10000))       // Check time and add; if time threshold enter if
         {
-	        GPIOD -> ODR &= 0x00001000;
-	        greenOn = 0;
+	        GPIOD -> ODR &= 0x00001000;             // turn of led
+	        greenTime = milliSec;                   // set time to current for further checks
         }
 	}
+	else                                            // green led is off
+    {
+	    greenOn = 0;                                // mark led as off
+    }
 }
 
 
 void check_Background(void)
 {	
-	if((GPIOA -> IDR << 31) & 0xF0000000)
+	if((GPIOA -> IDR << 31) & 0xF0000000)           // check if user button is pressed
 	{
-	    if (!userOn)
+	    if (!userOn)                                // if first 'if' entry set:
 	    {
-	        backgroundTime = milliSec;  // If user button just pressed get time
-	        userOn = 1;                 // To no reset press-time
+	        backgroundTime = milliSec;              // get time of first press
+	        userOn = 1;                             // mark user button as pressed
 	    }
 
-	    if (milliSec > (backgroundTime++ + 1000))   // check time and add
+	    if (milliSec > (backgroundTime++ + 1000))   // check time and add; if time threshold enter if
         {
-            GPIOD->ODR ^= 0x00020000;	// Toggle background
-            background = milliSec;      // reset time to new
+            GPIOD->ODR ^= 0x00020000;	            // Toggle background (tun on if off, turn off if on)
+            background = milliSec;                  // set time to current for further checks
         }
 	}
-	else
+	else                                            // user pin was not pressed
 	{
-	    userOn = 0;
-		GPIOD->ODR |= 0x00002000;       //turn on background
+	    userOn = 0;                                 // set user button as not pressed
+		GPIOD->ODR |= 0x00002000;                   // turn on background
 	}
 }
 
 
 void Timer_Main(void)
 {
-    Timer_Init();
+    led_port_init();                                // init led and user button
+    LCD_PortInit();                                 // init display ports
+    LCD_Init();                                     // init display itself
+    Keyboard_Init();                                // init keyboard
+    Timer_Init();                                   // Timer initialization
 
-    // Keyboard variables
-    uint16_t old_key = 0;
-    uint16_t new_key = 0;
-    char keyboard[17];
-    LCD_ClearDisplay(0xFFFF);
+    uint16_t old_keys = 0;                          // vars for keyboard (pressed / released / print)
+    uint16_t new_keys = 0;
+    char keys[17];
+    LCD_ClearDisplay(0xFFFF);                       // initial display clear
 
 	while(1)
 	{
-	    mainTime = milliSec;
+	    mainTime = milliSec;                        // get time of main-loop start
 
 	    // Keyboard Main stuff
-        old_key = new_key;
-        new_key = keyboard_Read();
+        old_keys = new_keys;                        // set previous key as old key
+        new_keys = keyboard_Read();                 // get new key
 
-        Short2Bitstring(new_key, keyboard);
-        LCD_WriteString(20, 20, 0x0000, 0xFFFF, keyboard);
+        Keyboard_Check(old_keys, new_keys, keys);   // check if keys were pressed / released (-> turns on green led)
 
-        if (old_key != new_key)
-        {
-            if (~old_key & (old_key ^ new_key))
-            {
-                if(0x00FF & new_key)
-                {
-                    GPIOD->ODR ^= 0x1000;
-                }
-            }
-            else
-            {
-                if(0xFF00 & old_key)
-                {
-                    GPIOD->ODR ^= 0x1000;
-                }
-            }
-        }
+        check_LED();                                // check if green led is for longer then 10s
 
-	    // Check if green led is on
-	        // If on, check how long
-	        // > 10s, turn of
-        check_LED();
+        check_Background();                         // check if userbutton is pressed & of toggling of display needed
 
-	    // Check if user button is pressed
-            // If button pressed, check time > 1s
-            // Toggle, if over threshold
-        check_Background();
-
-        // Wait, if duration of main loop < 50ms
-		while(milliSec < (mainTime + 50))
-		{
-			//do nothing and wait until time is over
-		}
+		while(milliSec < (mainTime + 50)) {}        // wait in case main-loop duration is under 50ms
 	}
 }
-
-
-
-
-
