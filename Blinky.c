@@ -29,7 +29,7 @@ void u_delay(int microsec)
 void blinky_main(void) 
 {
 		// Check if user button is pushed
-		if (GPIOA -> IDR << 31 & 0xF0000000)
+		if (GPIOA -> IDR &0x1)
 		{
 			// Turn on green led
 			GPIOD->ODR |= 0x00001000;

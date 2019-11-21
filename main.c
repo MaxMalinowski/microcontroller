@@ -5,16 +5,85 @@
 #include "display.h"
 #include "keyboard.h"
 #include "timer.h"
+#include "frequency.h"
 
-//main
 
+/*
+ * Global variables
+ */
+volatile uint32_t delta = 0;
+volatile uint32_t milliSec = 0;
+volatile uint32_t mainTime = 0;
+volatile uint32_t greenTime = 0;
+volatile uint32_t backgroundTime = 0;
+volatile uint8_t greenOn = 0;
+volatile uint8_t userOn = 0;
+volatile uint32_t capt_old = 0;
+volatile uint32_t capt_new = 0;
+volatile uint32_t frequency_Counted = 0;
+volatile uint32_t frequency_Captured = 0;
+
+
+/*
+ * Functions
+ */
+void TIM7_IRQHandler()
+{
+    TIM7 -> SR = 0;
+    milliSec++;
+}
+
+void TIM8_BRK_TIM12_IRQHandler(void)
+{
+    TIM12 -> SR = 0;
+    capt_old = capt_new;
+    capt_new = TIM12 -> CCR1;
+}
+
+
+/*
+ * MAIN-Function
+ */
 int main(void) 
 {
+    /*
+     * Initializations
+     */
 	mcpr_SetSystemCoreClock();
-	
-	
-	//LCD_Main();
-	//Keyboard_Main();
-	Timer_Main();
-	
+	led_InitPorts();
+	lcd_PortInit();
+	lcd_Init();
+	keyboard_Init();
+	timer7_Init();
+
+	/*
+	 * Local variables
+	 */
+	uint16_t old_keyboard = 0x0000;
+	uint16_t new_keyboard = 0x0000;
+	char keyboard[17] = 0;
+
+	/*
+	 * loop forever
+	 */
+	while (1)
+    {
+	    mainTime = milliSec;
+
+	    timer12_CountInit();
+	    timer12_CheckCounter();
+	    timer12_CaptureInit();
+        timer12_CheckCapture();
+
+        lcd_ClearDisplay();
+        old_keyboard = new_keyboard;
+        new_keyboard = keyboard_Read();
+        led_Write(new_keyboard);
+        keyboard_Check(old_keyboard, new_keyboard, keyboard);
+
+        timer7_CheckLed(&milliSec, &greenTime, &greenOn);
+        timer7_CheckBackground(&milliSec, &backgroundTime, &userOn);
+
+        while(milliSec < (mainTime + 50)) {}
+    }
 }

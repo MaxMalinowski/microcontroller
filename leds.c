@@ -4,7 +4,7 @@
 #include "math.h"
 
 
-void LEDs_InitPorts(void)
+void led_InitPorts(void)
 {
 	RCC -> AHB1ENR |= 0x00000018;		// Turn on Clock 
 	GPIOD -> MODER |= 0x50554405;		// E and D are outputs
@@ -12,7 +12,7 @@ void LEDs_InitPorts(void)
 }
 
 
-void LED_Output16BitWord(uint16_t data)
+void led_Output16BitWord(uint16_t data)
 {
 	GPIOD -> ODR &= ~0x0000C703;		
 	GPIOE -> ODR &= ~0x0000FF80;
@@ -23,17 +23,17 @@ void LED_Output16BitWord(uint16_t data)
 }
 
 
-void LEDs_Write(uint16_t data)	
+void led_Write(uint16_t data)
 {
 	GPIOD -> ODR |= 0x00000820;		// PD5 on, PD11 on
 	GPIOD -> ODR &= ~0x00000080;	// PD7 off
-	LED_Output16BitWord(data);		// Send data
+	led_Output16BitWord(data);		// Send data
 	GPIOD -> ODR &= ~0x00000020;	// PD5 off
 	GPIOD -> ODR |= 0x000000A0;		// PD5 on, PD7 on
 }
 
 
-void LEDs_delay(int microsec) 
+void led_delay(int microsec)
 {
 	int  zaehler =0;
 	while(zaehler != microsec * 27)
@@ -43,19 +43,19 @@ void LEDs_delay(int microsec)
 }
 
 
-void leds_main(void)
+void led_main(void)
 { 
 	int i=0;
 	for (i = 0; i < 16; i++) 
 	{
-		LEDs_Write((uint16_t) pow(2, i));
-		LEDs_delay(1000000);
+		led_Write((uint16_t) pow(2, i));
+		led_delay(1000000);
 	}
 	LEDs_Write(0xFFFF);
 	for (i = 0; i < 16; i++) 
 	{
-		LEDs_Write(~(uint16_t) pow(2, i));
-		LEDs_delay(1000000);
+		led_Write(~(uint16_t) pow(2, i));
+		led_delay(1000000);
 	}
 }
 

@@ -5,7 +5,7 @@
 #include "inttypes.h"
 
 
-void LCD_Delay(int microsec) 
+void lcd_Delay(int microsec)
 {
 	int  zaehler =0;
 	while(zaehler != microsec * 27)
@@ -15,14 +15,14 @@ void LCD_Delay(int microsec)
 }
 
 
-void LCD_Reset(void)
+void lcd_Reset(void)
 {
 	LCD_Delay(15);
 	GPIOD -> ODR |= 0x00000008;
 }
 
 
-void LCD_PortInit(void) 
+void lcd_PortInit(void)
 {
 	RCC -> AHB1ENR |= 0x0000001A;		// Turn on Clock 
 	GPIOB -> MODER |= 0x00050000;		// B, D, E are outputs
@@ -31,7 +31,7 @@ void LCD_PortInit(void)
 	GPIOD -> ODR |= 0x000020B0; 		//PD13, PD4, PD7, PD5 on
 }
 
-void LCD_Output16BitWord(uint16_t data)
+void lcd_Output16BitWord(uint16_t data)
 {
 	GPIOD -> ODR &= ~0x0000C703;		
 	GPIOE -> ODR &= ~0x0000FF80;
@@ -42,7 +42,7 @@ void LCD_Output16BitWord(uint16_t data)
 }	
 
 
-void LCD_WriteData(uint16_t data) 
+void lcd_WriteData(uint16_t data)
 {
 	GPIOE -> ODR |= 0x00000008;   // PE3 high
 	GPIOD -> ODR &= ~0x00000080;	// PD7 low
@@ -52,7 +52,7 @@ void LCD_WriteData(uint16_t data)
 }
 
 
-void LCD_WriteCommand(uint16_t cmd) 
+void lcd_WriteCommand(uint16_t cmd)
 {	
 	GPIOE -> ODR &= ~0x00000008;	// PE3 low
 	GPIOD -> ODR &= ~0x00000080;	// PD7 low
@@ -62,14 +62,14 @@ void LCD_WriteCommand(uint16_t cmd)
 }
 
 
-void LCD_WriteReg(uint16_t cmd, uint16_t data)
+void lcd_WriteReg(uint16_t cmd, uint16_t data)
 {
 	LCD_WriteCommand(cmd);	// Write command
 	LCD_WriteData(data);		// Write data
 }
 
 
-void LCD_Init(void)
+void lcd_Init(void)
 {
 	LCD_Reset();
 	LCD_WriteReg(0x0010, 0x0001);		/* Enter sleep mode */ 
@@ -95,20 +95,20 @@ void LCD_Init(void)
 }
 
 
-void LCD_SetCursor(uint32_t x, uint32_t y) 
+void lcd_SetCursor(uint32_t x, uint32_t y)
 {
 	LCD_WriteReg(0x004E, x);
 	LCD_WriteReg(0x004F, y);	
 }
 
 
-void LCD_DrawPixel(uint16_t color) 
+void lcd_DrawPixel(uint16_t color)
 {
 	LCD_WriteReg(0x0022, color);	
 }
 
 
-void LCD_ClearDisplay(uint16_t color)
+void lcd_ClearDisplay(uint16_t color)
 {
 	uint32_t pixel = 76800;		// number of pixels to color
 	LCD_WriteCommand(0x0022);	// set command once
@@ -119,26 +119,7 @@ void LCD_ClearDisplay(uint16_t color)
 }
 
 
-// not needed if LCD_WriteLetter works
-void LCD_PrintBit(unsigned char val, int bits, uint16_t foreground, uint16_t background)
-{
-	unsigned char test = 0x80;				// Mask to check against
-	while (bits--) 
-	{
-		if ((test & val) == 0)					// If bit not set, it's background
-		{
-			LCD_DrawPixel(background);		// Color in background
-		}
-		else														// Else bit is set, it's foreground
-		{
-			LCD_DrawPixel(foreground);		// Color in background
-		}
-		test >>= 1u;										// Shift to check next bit
-	}
-}
-
-
-void LCD_WriteLetter(int letter, int x, int y, uint16_t foreground, uint16_t background)
+void lcd_WriteLetter(int letter, int x, int y, uint16_t foreground, uint16_t background)
 {
 	uint32_t start = letter * 32;												// Start in fonts.h		
 	uint32_t end = start + 32;													// End in fonts.h
@@ -161,13 +142,11 @@ void LCD_WriteLetter(int letter, int x, int y, uint16_t foreground, uint16_t bac
 				LCD_DrawPixel(foreground);										// Color in background
 			}
 		}
-		// LCD_PrintBit(console_font_12x16[start++], 8, foreground, background);
-		// LCD_PrintBit(console_font_12x16[start++], 4, foreground, background);
-	}		
+	}
 }
 
 
-void LCD_WriteString(uint32_t x, uint32_t y, uint16_t foreground, uint16_t background, char *string)
+void lcd_WriteString(uint32_t x, uint32_t y, uint16_t foreground, uint16_t background, char *string)
 {
 	uint16_t i = 0;
 	do 
@@ -179,7 +158,7 @@ void LCD_WriteString(uint32_t x, uint32_t y, uint16_t foreground, uint16_t backg
 }
 
 
-void LCD_Main() {
+void lcd_Main() {
 	LCD_PortInit();
 	LCD_Init();
 	

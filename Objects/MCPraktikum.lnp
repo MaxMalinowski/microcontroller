@@ -6,6 +6,7 @@
 ".\objects\display.o"
 ".\objects\keyboard.o"
 ".\objects\timer.o"
+".\objects\frequency.o"
 ".\objects\startup_stm32f407xx.o"
 ".\objects\system_stm32f4xx.o"
 --strict --scatter ".\Objects\MCPraktikum.sct"
