@@ -2,7 +2,13 @@
 #include "_mcpr_stm32f407.h" 
 #include "keyboard.h"
 #include "display.h"
+#include "blinky.h"
 #include "inttypes.h"
+
+volatile uint16_t old_key = 0;
+volatile uint16_t new_key = 0;
+volatile char keyboard[17];
+
 
 
 void keyboard_Init(void) 
@@ -24,7 +30,7 @@ uint16_t keyboard_Read(void)
 	{
 		GPIOB -> ODR |= 0x00F0;        	// all outputs (B4-7) high
 		GPIOB -> ODR &= ~(0x0010 << i);	// set one port, equals one line low
-		lcd_Delay(20);
+		u_Delay(20);
 
 		res |= (((0x0078 & ~(GPIOA -> IDR)) >> 3) << (i * 4)); 	// Check input	
 	
@@ -77,17 +83,6 @@ void keyboard_Check(uint16_t old_key, uint16_t new_key, char* keyboard)
 
 void keyboard_Main(void)
 {
-	LCD_PortInit();
-	LCD_Init();
-	keyboard_Init();
-	
-	uint16_t old_key = 0;
-	uint16_t new_key = 0;
-	char keyboard[17];
-	LCD_ClearDisplay(0xFFFF);
-
-	while(1)
-	{
 		old_key = new_key;
 		new_key = keyboard_Read();
 
@@ -111,7 +106,6 @@ void keyboard_Main(void)
                 }
             }
         }
-	}
 }
 
 

@@ -1,8 +1,8 @@
 // Initialize ports on first usage
-void led_port_init(void);
+void blinky_Init(void);
 
 // Wait for specified amount of time
-void u_delay(int microsec);
+void u_Delay(int microsec);
 
 // Main blinky functionality
-void blinky_main(void);
+void blinky_Main(void);

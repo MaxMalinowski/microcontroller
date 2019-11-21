@@ -1,10 +1,11 @@
 #include "STM32F4xx.h"
 #include "_mcpr_stm32f407.h" 
 #include "leds.h"
+#include "blinky.h"
 #include "math.h"
 
 
-void led_InitPorts(void)
+void led_Init(void)
 {
 	RCC -> AHB1ENR |= 0x00000018;		// Turn on Clock 
 	GPIOD -> MODER |= 0x50554405;		// E and D are outputs
@@ -33,29 +34,19 @@ void led_Write(uint16_t data)
 }
 
 
-void led_delay(int microsec)
-{
-	int  zaehler =0;
-	while(zaehler != microsec * 27)
-	{
-		zaehler++;
-	}
-}
-
-
-void led_main(void)
+void led_Main(void)
 { 
 	int i=0;
 	for (i = 0; i < 16; i++) 
 	{
 		led_Write((uint16_t) pow(2, i));
-		led_delay(1000000);
+		u_Delay(1000000);
 	}
-	LEDs_Write(0xFFFF);
+	led_Write(0xFFFF);
 	for (i = 0; i < 16; i++) 
 	{
 		led_Write(~(uint16_t) pow(2, i));
-		led_delay(1000000);
+		u_Delay(1000000);
 	}
 }
 

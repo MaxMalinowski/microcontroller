@@ -5,7 +5,7 @@
 <h2>Tool Versions:</h2>
 IDE-Version: µVision V5.28.0.0
 Copyright (C) 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: . THI, Technische Hochschule Ingolstadt, LIC=----
+License Information: Thomas Egen, Technische Hochschule Ingolstadt, LIC=----
  
 Tool Versions:
 Toolchain:       MDK-Lite  Version: 5.28.0.0
@@ -21,25 +21,61 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.6.0
 Dialog DLL:      TCM.DLL V1.36.2.0
  
 <h2>Project:</h2>
-C:\Keil Workspace TomMax\MCPraktikum.uvprojx
-Project File Date:  11/20/2019
+C:\Users\the86\Documents\Programmieren\Workspace MCPraktikum\microcontroller\MCPraktikum.uvprojx
+Project File Date:  11/21/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Rebuild target 'Discovery Board - RAM'
-compiling _mcpr_stm32f407.c...
 compiling main.c...
+frequency.h(9): warning:  #1-D: last line of file ends without a newline
+  void timer12_CheckCapture(uint32_t *freq_Capt);
+main.c(64): warning:  #520-D: initialization with "{...}" expected for aggregate object
+  	char keyboard[17] = 0;
+main.c(73): warning:  #223-D: function "timer12_CountInit" declared implicitly
+  	    timer12_CountInit();
+main.c(74): error:  #165: too few arguments in function call
+  	    timer12_CheckCounter();
+main.c(76): error:  #165: too few arguments in function call
+          timer12_CheckCapture();
+main.c(78): error:  #165: too few arguments in function call
+          lcd_ClearDisplay();
+main.c(84): warning:  #167-D: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t *"
+          timer7_CheckLed(&milliSec, &greenTime, &greenOn);
+main.c(84): warning:  #167-D: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t *"
+          timer7_CheckLed(&milliSec, &greenTime, &greenOn);
+main.c(84): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "uint8_t *"
+          timer7_CheckLed(&milliSec, &greenTime, &greenOn);
+main.c(85): warning:  #167-D: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t *"
+          timer7_CheckBackground(&milliSec, &backgroundTime, &userOn);
+main.c(85): warning:  #167-D: argument of type "volatile uint32_t *" is incompatible with parameter of type "uint32_t *"
+          timer7_CheckBackground(&milliSec, &backgroundTime, &userOn);
+main.c(85): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "uint8_t *"
+          timer7_CheckBackground(&milliSec, &backgroundTime, &userOn);
+main.c: 9 warnings, 3 errors
 compiling blinky.c...
+compiling _mcpr_stm32f407.c...
 compiling leds.c...
-compiling display.c...
+leds.c(54): warning:  #223-D: function "LEDs_Write" declared implicitly
+  	LEDs_Write(0xFFFF);
+leds.c: 1 warning, 0 errors
 compiling keyboard.c...
+keyboard.c(80): warning:  #223-D: function "LCD_PortInit" declared implicitly
+  	LCD_PortInit();
+keyboard.c(81): warning:  #223-D: function "LCD_Init" declared implicitly
+  	LCD_Init();
+keyboard.c(87): warning:  #223-D: function "LCD_ClearDisplay" declared implicitly
+  	LCD_ClearDisplay(0xFFFF);
+keyboard.c: 3 warnings, 0 errors
+compiling display.c...
 assembling startup_stm32f407xx.s...
 compiling system_stm32f4xx.c...
 compiling frequency.c...
+frequency.h(9): warning:  #1-D: last line of file ends without a newline
+  void timer12_CheckCapture(uint32_t *freq_Capt);
+frequency.c: 1 warning, 0 errors
 compiling timer.c...
-linking...
-Program Size: Code=2130 RO-data=8642 RW-data=44 ZI-data=1636  
-".\Objects\MCPraktikum.axf" - 0 Error(s), 0 Warning(s).
+".\Objects\MCPraktikum.axf" - 3 Error(s), 14 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -50,27 +86,28 @@ Package Vendor: ARM
    * Component: CORE Version: 5.3.0
 
 Package Vendor: Keil
-                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.13.0.pack
-                Keil.STM32F4xx_DFP.2.13.0
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.14.0.pack
+                Keil.STM32F4xx_DFP.2.14.0
                 STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
-   * Component: Startup Version: 2.6.2
+   * Component: Startup Version: 2.6.3
 
 <h2>Collection of Component include folders:</h2>
   .\RTE\_Discovery_Board_-_RAM
-  C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include
-  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+  C:\Users\the86\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include
+  C:\Users\the86\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.3.0
 
-   * Component: Keil::Device:Startup:2.6.2
-      Source file:   MDK\Device\Source\ARM\STM32F40xxx_41xxx_OPT.s
-      Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
+   * Component: Keil::Device:Startup:2.6.3
       Source file:   MDK\Device\Source\ARM\STM32F4xx_OTP.s
       Include file:  Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
+      Source file:   MDK\Device\Source\ARM\STM32F40xxx_41xxx_OPT.s
+      Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c
-Build Time Elapsed:  00:00:04
+Target not created.
+Build Time Elapsed:  00:00:16
 </pre>
 </body>
 </html>

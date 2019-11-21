@@ -41,17 +41,17 @@ void timer12_CaptureInit(void)
 }
 
 
-void timer12_CheckCounter(void)
+void timer12_CheckCounter(uint32_t* ms, uint32_t* freq_Count)
 {
 	/*TIM12 -> CNT = 0;
-	counterWait = milliSec;
+	counterWait = *milliSec;
 	while(milliSec < (counterWait + 20)) {}
-	counterHz = 1/20/1000/(TIM12->CNT-1);*/
-	
+	counterHz = 1/20/1000/(TIM12->CNT-1);
+	*/
 }
 
 
-void timer12_CheckCapture(void)
+void timer12_CheckCapture(uint32_t *freq_Capt)
 {
    // captureHz = 1/(capture_new - capture_old)/84000000;
 	

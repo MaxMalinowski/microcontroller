@@ -50,8 +50,7 @@ int main(void)
      * Initializations
      */
 	mcpr_SetSystemCoreClock();
-	led_InitPorts();
-	lcd_PortInit();
+	led_Init();
 	lcd_Init();
 	keyboard_Init();
 	timer7_Init();
@@ -61,25 +60,32 @@ int main(void)
 	 */
 	uint16_t old_keyboard = 0x0000;
 	uint16_t new_keyboard = 0x0000;
-	char keyboard[17] = 0;
+	char keyboard[17];
 
 	/*
 	 * loop forever
 	 */
 	while (1)
     {
+			lcd_ClearDisplay(0x00000);
+
+			//blinky_Main();
+			
+			//led_Main();
+			
+			//lcd_Main();
+			
 	    mainTime = milliSec;
 
-	    timer12_CountInit();
-	    timer12_CheckCounter();
+	    /*timer12_CounterInit();
+	    timer12_CheckCounter(milliSec, frequency_Counted);
 	    timer12_CaptureInit();
-        timer12_CheckCapture();
+      timer12_CheckCapture(frequency_Captured);*/
 
-        lcd_ClearDisplay();
-        old_keyboard = new_keyboard;
+        /*old_keyboard = new_keyboard;
         new_keyboard = keyboard_Read();
         led_Write(new_keyboard);
-        keyboard_Check(old_keyboard, new_keyboard, keyboard);
+        keyboard_Check(old_keyboard, new_keyboard, keyboard);*/
 
         timer7_CheckLed(&milliSec, &greenTime, &greenOn);
         timer7_CheckBackground(&milliSec, &backgroundTime, &userOn);
