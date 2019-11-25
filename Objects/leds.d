@@ -11,4 +11,5 @@
 .\objects\leds.o: _mcpr_stm32f407.h
 .\objects\leds.o: leds.h
 .\objects\leds.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
+.\objects\leds.o: blinky.h
 .\objects\leds.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

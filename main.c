@@ -71,9 +71,9 @@ int main(void) {
          * Frequency measurements
          */
         timer12_CounterInit();
-        timer12_CheckCounter(milliSec, frequency_Counted);
+        timer12_CheckCounter(&milliSec, &frequency_Counted);
         timer12_CaptureInit();
-        timer12_CheckCapture(frequency_Captured, capt_old, capt_new);
+        timer12_CheckCapture(&frequency_Captured, &capt_old, &capt_new);
 
         /*
          * Reading keyboard input
@@ -96,3 +96,5 @@ int main(void) {
         while (milliSec < (mainTime + 50)) {}
     }
 }
+
+
