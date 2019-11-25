@@ -7,52 +7,51 @@
 #include "frequency.h"
 #include "inttypes.h"
 
-
-volatile uint32_t capture_old = 0;
-volatile uint32_t capture_new = 0;
-
+void timer12_Init(void)
+{
+    RCC -> APB1ENR |= 0x00000040                // Enable clock for Timer 12
+    RCC -> AHB1ENR |= 0x00000002;               // Enable clock for GPIOB
+    GPIOB -> MODER &= ~0xC0000000;              // Set Pin 14, 15 to 0
+    GPIOB -> MODER |= 0x20000000;               // Set GPIOB to alternate function
+    GPIOB -> AFR[1] |= 0x09000000;              // AFR[1] (>Pin 14 in AFRH), 1001 in AFRH14
+    TIM12 -> ARR  = 0xFFFF;                     // Set autoreload register to max. value
+    TIM12 -> PSC = 0x0000;                      // Set prescaler to  0
+    TIM12 -> EGR |= 0x0001;                     // Generate Event
+    TIM12 -> CCMR1 |= 0x0001;                   // Select TI1 as input
+}
 
 
 void timer12_CountInit(void)
-{	
-	//GPIOB->MODER |= 0x20000000;	//Alternativ-function for PB14
-	RCC -> APB1ENR |= 0x00000040;	        // enable Timer 12
-	TIM12 -> ARR = 0xFFFF;		        // set auto-reload register to 3999
-	TIM12->CCMR1 |= 0x0001;
-	TIM12->CCER |= 0x0001;		// mit &
-	TIM12->SMCR |= 0x57;
-	TIM12 -> CR1 |= 0x00000001;		        // enable counter
+{
+    TIM12 -> CR1 = 0x0000;                      // Disable counter
+    TIM12 -> DIER = 0x0000;                     // Disable interrupt
+    TIM12 -> CCER = 0x0000;                     // Disable capture compare
+	TIM12 -> SMCR |= 0x0057;                    // Select trigger source (extern source)
+	TIM12 -> CR1 = 0x0001;		                // Enable counter
 }
 
 void timer12_CaptureInit(void)
-{	
-	//GPIOB is on	
-	//GPIOB->MODER |= 0x20000000;	//Alternativ-function for PB14
-	//GPIOB->AFR |= 
-
-	RCC -> APB1ENR |= 0x00000040;	        // enable Timer 12
-	TIM12 -> ARR = 0xFFFF;		        // set auto-reload register to 3999
-	TIM12->CCMR1 |= 0x0001;
-	TIM12->CCER |= 0x0001;
-	TIM12 -> DIER |= 0x00000002;		        // enable interrupt if overflow
-	NVIC_SetPriority(TIM8_BRK_TIM12_IRQn, 1);   // set interrupt priority
-	NVIC_EnableIRQ(TIM8_BRK_TIM12_IRQn);        // enable interrupt in nvic
-	TIM12 -> CR1 |= 0x00000001;		        // enable counter
+{
+    TIM12 -> CR1 = 0x0000;                      // Disable counter
+    TIM12 -> SMCR = 0x0000;                     // Select trigger source (intern clock)
+    TIM12 -> CCER = 0x0001;                     // Enable capture compare (rising)
+	NVIC_SetPriority(TIM8_BRK_TIM12_IRQn, 1);   // Set interrupt priority
+	NVIC_EnableIRQ(TIM8_BRK_TIM12_IRQn);        // Enable interrupt in nvic
+    TIM12 -> DIER |= 0x0002;                    // Enable interrupt
+	TIM12 -> CR1 = 0x0001;		                // Enable counter
 }
 
 
 void timer12_CheckCounter(uint32_t* ms, uint32_t* freq_Count)
 {
-	/*TIM12 -> CNT = 0;
-	counterWait = *milliSec;
-	while(milliSec < (counterWait + 20)) {}
-	counterHz = 1/20/1000/(TIM12->CNT-1);
-	*/
+	TIM12 -> CNT = 0;                           // Set counter to 0
+	counterWait = *milliSec;                    // Save current time
+	while(milliSec < (counterWait + 20)) {}     // wait 20ms
+	*freq_Count = TIM12 -> CNT / 0.02;          // calculate frequency
 }
 
 
-void timer12_CheckCapture(uint32_t *freq_Capt)
+void timer12_CheckCapture(uint32_t* freq_Capt, uint32_t* capt_old, uint32_t* capt_new)
 {
-   // captureHz = 1/(capture_new - capture_old)/84000000;
-	
+    *freq_Capt = 0.000011905 * (*capt_new - *capt_old);
 }

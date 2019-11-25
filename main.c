@@ -25,71 +25,74 @@ volatile uint32_t frequency_Captured = 0;
 
 
 /*
- * Functions
+ * Interrupts
  */
-void TIM7_IRQHandler()
-{
-    TIM7 -> SR = 0;
+void TIM7_IRQHandler() {
+    TIM7->SR = 0;
     milliSec++;
 }
 
-void TIM8_BRK_TIM12_IRQHandler(void)
-{
-    TIM12 -> SR = 0;
+void TIM8_BRK_TIM12_IRQHandler(void) {
+    TIM12->SR = 0;
     capt_old = capt_new;
-    capt_new = TIM12 -> CCR1;
+    capt_new = TIM12->CCR1;
 }
 
 
 /*
  * MAIN-Function
  */
-int main(void) 
-{
+int main(void) {
     /*
      * Initializations
      */
-	mcpr_SetSystemCoreClock();
-	led_Init();
-	lcd_Init();
-	keyboard_Init();
-	timer7_Init();
+    mcpr_SetSystemCoreClock();
+    led_Init();
+    lcd_Init();
+    lcd_ClearDisplay(0x00000);
+    keyboard_Init();
+    timer7_Init();
+    timer12_Init();
 
-	/*
-	 * Local variables
-	 */
-	uint16_t old_keyboard = 0x0000;
-	uint16_t new_keyboard = 0x0000;
-	char keyboard[17];
+    /*
+     * Local variables
+     */
+    uint16_t old_keyboard = 0x0000;
+    uint16_t new_keyboard = 0x0000;
+    char keyboard[17];
 
-	/*
-	 * loop forever
-	 */
-	while (1)
-    {
-			lcd_ClearDisplay(0x00000);
+    /*
+     * loop forever
+     */
+    while (1) {
+        mainTime = milliSec;
 
-			//blinky_Main();
-			
-			//led_Main();
-			
-			//lcd_Main();
-			
-	    mainTime = milliSec;
+        /*
+         * Frequency measurements
+         */
+        timer12_CounterInit();
+        timer12_CheckCounter(milliSec, frequency_Counted);
+        timer12_CaptureInit();
+        timer12_CheckCapture(frequency_Captured, capt_old, capt_new);
 
-	    /*timer12_CounterInit();
-	    timer12_CheckCounter(milliSec, frequency_Counted);
-	    timer12_CaptureInit();
-      timer12_CheckCapture(frequency_Captured);*/
-
-        /*old_keyboard = new_keyboard;
+        /*
+         * Reading keyboard input
+         * Dispaling input on lcd's and led's
+         */
+        old_keyboard = new_keyboard;
         new_keyboard = keyboard_Read();
         led_Write(new_keyboard);
-        keyboard_Check(old_keyboard, new_keyboard, keyboard);*/
+        keyboard_Check(old_keyboard, new_keyboard, keyboard);
 
+        /*
+         * Checking timer7 conditions
+         */
         timer7_CheckLed(&milliSec, &greenTime, &greenOn);
         timer7_CheckBackground(&milliSec, &backgroundTime, &userOn);
 
-        while(milliSec < (mainTime + 50)) {}
+        /*
+         * Waiting, if loop too fast
+         */
+        while (milliSec < (mainTime + 50)) {}
     }
 }
