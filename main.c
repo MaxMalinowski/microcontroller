@@ -75,6 +75,8 @@ int main(void) {
         timer12_CaptureInit();
         timer12_CheckCapture(&frequency_Captured, &capt_old, &capt_new);
 
+				//Ausgabe auf Display
+			
         /*
          * Reading keyboard input
          * Dispaling input on lcd's and led's

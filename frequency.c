@@ -34,7 +34,7 @@ void timer12_CounterInit(void)
 
 void timer12_CaptureInit(void)
 {
-    TIM12 -> CR1 = 0x0000;                      // Disable counter
+    TIM12 -> CR1 = 0x0000;                      // Disable counter, warum Max??
     TIM12 -> SMCR = 0x0000;                     // Select trigger source (intern clock)
     TIM12 -> CCER = 0x0001;                     // Enable capture compare (rising)
 	NVIC_SetPriority(TIM8_BRK_TIM12_IRQn, 1);   // Set interrupt priority
@@ -55,5 +55,6 @@ void timer12_CheckCounter(volatile uint32_t* ms, volatile uint32_t* freq_Count)
 
 void timer12_CheckCapture(volatile uint32_t* freq_Capt, volatile uint32_t* capt_old, volatile uint32_t* capt_new)
 {
-    *freq_Capt = 0.000011905 * (*capt_new - *capt_old);
+    *freq_Capt = 0.000011905 * (*capt_new - *capt_old); // check ich nicht
 }
+
