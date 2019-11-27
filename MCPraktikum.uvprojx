@@ -407,6 +407,21 @@
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
             </File>
+            <File>
+              <FileName>keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>frequency.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\frequency.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -817,6 +832,21 @@
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
+            </File>
+            <File>
+              <FileName>keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>frequency.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\frequency.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1366,6 +1396,21 @@
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
+            </File>
+            <File>
+              <FileName>keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>frequency.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\frequency.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -10,5 +10,6 @@
 .\objects\display.o: C:\Users\maxma\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
 .\objects\display.o: _mcpr_stm32f407.h
 .\objects\display.o: display.h
-.\objects\display.o: fonts.h
 .\objects\display.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
+.\objects\display.o: blinky.h
+.\objects\display.o: fonts.h

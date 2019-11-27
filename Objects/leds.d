@@ -10,4 +10,6 @@
 .\objects\leds.o: C:\Users\maxma\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
 .\objects\leds.o: _mcpr_stm32f407.h
 .\objects\leds.o: leds.h
+.\objects\leds.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
+.\objects\leds.o: blinky.h
 .\objects\leds.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
