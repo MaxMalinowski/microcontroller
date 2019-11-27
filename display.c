@@ -152,7 +152,7 @@ void LCD_WriteLetter(int letter, int x, int y, uint16_t foreground, uint16_t bac
 			if(i == 8) {
 				val = console_font_12x16[start++];						// Fist byte printed, get second byte
 			}
-			if (((0x80 >> (i % 8)) & val) == 0)										// If bit not set, it's background
+			if (((0x80 >> (i % 8)) & val) == 0)							// If bit not set, it's background
 			{
 				LCD_DrawPixel(background);										// Color in background
 			}
