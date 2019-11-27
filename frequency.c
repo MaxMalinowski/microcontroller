@@ -11,7 +11,7 @@ volatile uint32_t counterWait=0;
 
 void timer12_Init(void)
 {
-    RCC -> APB1ENR |= 0x00000040;                // Enable clock for Timer 12
+    RCC -> APB1ENR |= 0x00000040;               // Enable clock for Timer 12
     RCC -> AHB1ENR |= 0x00000002;               // Enable clock for GPIOB
     GPIOB -> MODER &= ~0xC0000000;              // Set Pin 14, 15 to 0
     GPIOB -> MODER |= 0x20000000;               // Set GPIOB to alternate function
@@ -45,9 +45,9 @@ void timer12_CaptureInit(void)
 
 
 void timer12_CheckCounter(volatile uint32_t* ms, volatile uint32_t* freq_Count)
-{
-	TIM12 -> CNT = 0;                           // Set counter to 0
+{	
 	counterWait = *ms;                    // Save current time
+	TIM12 -> CNT = 0;                           // Set counter to 0
 	while(*ms < (counterWait + 20)) {}     // wait 20ms
 	*freq_Count = TIM12 -> CNT / 0.02;          // calculate frequency
 }
@@ -55,6 +55,6 @@ void timer12_CheckCounter(volatile uint32_t* ms, volatile uint32_t* freq_Count)
 
 void timer12_CheckCapture(volatile uint32_t* freq_Capt, volatile uint32_t* capt_old, volatile uint32_t* capt_new)
 {
-    *freq_Capt = 0.000011905 * (*capt_new - *capt_old); // check ich nicht
+    *freq_Capt = 84000000 / (*capt_new - *capt_old); 
 }
 
