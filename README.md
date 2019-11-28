@@ -23,5 +23,14 @@ Trigger the display to print out strings and letters or to clean the display
 
 Read the inputs of the keyboard
 
+## Ex. 6
 
+Use easy Timer7 as a time basis and derive different time from that
 
+## Ex. 7
+
+Measure an externat frequency using the timer12 peripheral and two different counting methods
+
+## Ex. 8
+
+Communicate with an master in a LIN network and respond to certain identifiers with corresponding messages.
