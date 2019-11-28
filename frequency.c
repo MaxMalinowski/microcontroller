@@ -30,7 +30,7 @@ void timer12_CounterInit(void)
     TIM12 -> DIER = 0x0000;                     // Disable interrupt
     TIM12 -> CCER = 0x0000;                     // Disable capture compare
     TIM12 -> SMCR |= 0x0057;                    // Select trigger source (extern source)
-    TIM12 -> CR1 = 0x0001;		                  // Enable counter
+    TIM12 -> CR1 = 0x0001;		        // Enable counter
 }
 
 
@@ -41,7 +41,7 @@ void timer12_CaptureInit(void)
     NVIC_SetPriority(TIM8_BRK_TIM12_IRQn, 1);   // Set interrupt priority
     NVIC_EnableIRQ(TIM8_BRK_TIM12_IRQn);        // Enable interrupt in nvic
     TIM12 -> DIER |= 0x0002;                    // Enable interrupt
-    TIM12 -> CR1 = 0x0001;		                  // Enable counter
+    TIM12 -> CR1 = 0x0001;		        // Enable counter
 }
 
 
@@ -50,16 +50,15 @@ void timer12_CheckCounter(volatile uint32_t* ms, uint32_t* freq_Count)
     counterWait = *ms;                    				// Save current time
     while(*ms < (counterWait + 1)) {}     				// wait 1ms (one interrupt)
     TIM12 -> CNT = 0;                      				// Set counter to 0
-    while(*ms < (counterWait + 10)) {}     				// wait 10ms
-    *freq_Count = (TIM12 -> CNT) * 100;  					// calculate frequency
+    while(*ms < (counterWait + 11)) {}     				// wait 10ms
+    *freq_Count = (TIM12 -> CNT) * 100;  				// calculate frequency (*100 = /0.01)
 }
-
 
 
 void timer12_CheckCapture(uint32_t* freq_Capt, volatile uint32_t* capt_old, volatile uint32_t* capt_new, volatile uint8_t* tim12_count)
 {
-    while (*tim12_count <= 3) {}
-		difference = (uint16_t)*capt_new - (uint16_t)*capt_old;
-    *freq_Capt = 84000000 / difference;
+    while (*tim12_count <= 3) {}					// wait for 3 interrups, to have good values 
+    difference = (uint16_t)*capt_new - (uint16_t)*capt_old;		// calculate difference -> casting needed to prevent nasty things
+    *freq_Capt = 84000000 / difference;					// save frequncy
 }
 
