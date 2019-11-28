@@ -14,40 +14,40 @@
  * Can change any time (in interrupt)
  * Compiler know through volatile keyword
  */
-volatile uint32_t milliSec = 0;
-volatile uint32_t capt_old = 0;
-volatile uint32_t capt_new = 0;
-volatile uint8_t tim12_count = 0;
+volatile uint32_t milliSec = 0;         // global milliseconds
+volatile uint32_t capt_old = 0;         // old frequency captured
+volatile uint32_t capt_new = 0;         // new frequency caputred
+volatile uint8_t tim12_count = 0;       // count number of interrupts
 
 
 /*
  * normal global variables
  */
-uint32_t mainTime = 0;
-uint32_t greenTime = 0;
-uint32_t backgroundTime = 0;
-uint32_t frequency_Counted = 0;
-uint32_t frequency_Captured = 0;
-uint8_t greenOn = 0;
-uint8_t userOn = 0;
+uint32_t mainTime = 0;                  // time for main routine
+uint32_t greenTime = 0;                 // time for greed led
+uint32_t backgroundTime = 0;            // time for background
+uint32_t frequency_Counted = 0;         // frequency calculated by counting
+uint32_t frequency_Captured = 0;        // frequency calculated by capturing
+uint8_t greenOn = 0;                    // flag if green led is on
+uint8_t userOn = 0;                     // flag if green button is pressed
 
 
 /*
  * Interrupts
  */
 void TIM7_IRQHandler() {
-    TIM7 -> SR = 0;
-    milliSec++;
+    TIM7 -> SR = 0;                             // restet status register
+    milliSec++;                                 // add one millisecond
 }
 
 void TIM8_BRK_TIM12_IRQHandler(void) {
-    TIM12 -> SR = 0;
-    capt_old = capt_new;
-    capt_new = TIM12 -> CCR1;
-    if(tim12_count++ > 3)
+    TIM12 -> SR = 0;                            // reset status register
+    capt_old = capt_new;                        // save old frequency value
+    capt_new = TIM12 -> CCR1;                   // get new frequency value
+    if(tim12_count++ > 3)                       // check number of interrupts
     {
-        NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn);
-        tim12_count = 0;
+        NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn);   // if more then 3 interrupts, all values we need
+        tim12_count = 0;                        // disable interrupt and set counter to 0 for next time
     }
 }
 
@@ -100,7 +100,7 @@ int main(void)
 
         /*
          * Reading keyboard input
-         * Displaying input on lcd's and led's
+         * Displaying input on lcd and led's
          */
         old_keyboard = new_keyboard;
         new_keyboard = keyboard_Read();
