@@ -7,6 +7,7 @@
 #include "keyboard.h"
 #include "timer.h"
 #include "frequency.h"
+#include "lin.h"
 
 
 /*
@@ -31,12 +32,18 @@ uint32_t frequency_Captured = 0;        // frequency calculated by capturing
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
 
+/*
+ * states for lin communication
+ */
+enum lin_state {wait_for_break, wait_for_sync, wait_for_id, send_data};
+
+
 
 /*
  * Interrupts
  */
 void TIM7_IRQHandler() {
-    TIM7 -> SR = 0;                             // restet status register
+    TIM7 -> SR = 0;                             // reset status register
     milliSec++;                                 // add one millisecond
 }
 
@@ -48,6 +55,29 @@ void TIM8_BRK_TIM12_IRQHandler(void) {
     {
         NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn);   // if more then 3 interrupts, all values we need
         tim12_count = 0;                        // disable interrupt and set counter to 0 for next time
+    }
+}
+
+void USART6_IRQn(void)
+{
+    // delete st flag
+    // state machine
+    switch lin_state {
+        case wait_for_break:
+            // check lbd
+            break;
+        case wait_for_sync:
+            // check received
+            break;
+        case wait_for_id:
+            // if received and right id
+            // else
+            break;
+        case send_data:
+            // if byte send and something to send
+            break;
+        default:
+            break;
     }
 }
 
