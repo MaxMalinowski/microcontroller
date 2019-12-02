@@ -98,6 +98,7 @@ int main(void)
     keyboard_Init();
     timer7_Init();
     timer12_Init();
+    lin_Init();
 
 
     /*

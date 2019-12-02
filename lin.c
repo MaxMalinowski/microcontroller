@@ -4,16 +4,15 @@
 
 void lin_Init(void)
 {
-    // Configure ports (Clock, alt. function)
-    // set clock for usart modul
-    // configure usart as uart for lin
-    // set baudrate
-    // sending and receiving units
-    // define interrupt happenings
-    // set data format
-    // turn on uart -> enable baudratetimer
-    // uart in nvic
-    // interrupthandler
+    RCC -> AHB1ENR |= 0x00000004;               // enable clock for GPIOC
+    GPIOC -> MODER |= 0x000000A0;               // set Pin 6, 7 to Alternate Mode
+    GPIOC -> AFR[0] |= 0x76000000;              // select alternate functions
+    RCC -> APB1ENR |= 0x00000020;               // enable clock for usart6
+    USART6 -> BRR = 0x00001117;                 // set baudrate 273,4375
+    USART6 -> CR1 |= 0x0000206B;                // enable SBK, RE, TE, RXNEIE, TCIE, UE
+    USART6 -> CR2 |= 0x00004040;                // enable LINEN, LBDIE
+    NVIC_SetPriority(USART6:IRQn, 0);           // set interrupt priority
+    NVIC_Enable_IRQ(USART_IRQn);                // enable interrupt
 }
 
 
