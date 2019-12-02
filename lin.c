@@ -11,7 +11,7 @@ void lin_Init(void)
     USART6 -> BRR = 0x00001117;                 // set baudrate 273,4375
     USART6 -> CR1 |= 0x0000206B;                // enable SBK, RE, TE, RXNEIE, TCIE, UE
     USART6 -> CR2 |= 0x00004040;                // enable LINEN, LBDIE
-    NVIC_SetPriority(USART6:IRQn, 0);           // set interrupt priority
+    NVIC_SetPriority(USART6_IRQn, 0);           // set interrupt priority
     NVIC_Enable_IRQ(USART_IRQn);                // enable interrupt
 }
 
