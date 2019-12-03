@@ -29,11 +29,11 @@ uint32_t greenTime = 0;                 // time for greed led
 uint32_t backgroundTime = 0;            // time for background
 uint32_t frequency_Counted = 0;         // frequency calculated by counting
 uint32_t frequency_Captured = 0;        // frequency calculated by capturing
+uint16_t old_keyboard = 0;							// previous keyboard state
+uint16_t new_keyboard = 0;							// current keyboard state
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
-uint8_t keyboard;                         // keyboard state
-uint8_t frequency;                        // frequency
-uint8_t pwm;                              // mock data
+uint8_t pwm;                            // mock data
 char* lin_data;                         // array, where date for lin communication is stored
 
 
@@ -92,21 +92,26 @@ void UART6_IRQn(void)
         case wait_for_id:
             if (status & 0x00000020)                // check if data received
             {
-                switch (data) {                     // check if received data is relevant identifier
+								switch (data & ~0xC0) 							// check if received data is relevant identifier
+									{             
                     case 0x18:                      // send temp / pwm
                         lin_current = send_data;
-                        lin_PackData(0x18, &pwm, 1, lin_data);
-                        USART6 -> DR = *lin_data << 8;
+												lin_SendPwm(&pwm, 1, 0x18, lin_data);
                         break;
-                    case 0x28:                      // send frequency
+                    case 0x28:                      // send more accurate frequency
                         lin_current = send_data;
-                        lin_PackData(0x28, &frequency, 4, lin_data);
-                        USART6 -> DR = *lin_data << 8;
+												if (frequency_Captured > 1000000)
+												{
+													lin_SendFreq(&frequency_Counted, 4, 0x28, lin_data);
+												}
+												else
+												{
+													lin_SendFreq(&frequency_Captured, 4, 0x28, lin_data);
+												}
                         break;
                     case 0x38:                      // send keyboard
                         lin_current = send_data;
-                        lin_PackData(0x38, &keyboard, 2, lin_data);
-                        USART6 -> DR = *lin_data << 8;
+												lin_SendKeys(&new_keyboard, 2, 0x38, lin_data);
                         break;
                     default:                        // identifier not relevant
                         lin_current = wait_for_break;
@@ -120,9 +125,9 @@ void UART6_IRQn(void)
         case send_data:
             if (status & 0x00000040)                // check if data was send
             {
-                if (*lin_data != 0x0000)          // check if data to send
+                if (*lin_data != 0x0000)          	// check if data to send
                 {
-                    USART6 -> DR = *lin_data << 8;   // if data left, shift into data register
+                    USART6 -> DR = *lin_data << 8;  // if data left, shift into data register
                 }
                 else
                 {
@@ -162,8 +167,6 @@ int main(void)
     /*
      * Local variables
      */
-    uint16_t old_keyboard = 0x0000;
-    uint16_t new_keyboard = 0x0000;
     char buffer_count[32];
     char buffer_capt[32];
 
@@ -181,16 +184,6 @@ int main(void)
         timer12_CheckCounter(&milliSec, &frequency_Counted);
         timer12_CaptureInit();
         timer12_CheckCapture(&frequency_Captured, &capt_old, &capt_new, &tim12_count);
-     /*   if (frequency_Captured > 1000000)
-        {
-            frequency = int2Bitstring(&frequency_Captured);
-        }
-        else
-        {
-            frequency = int2Bitstring(&frequency_Counted)
-        }*/
-			
-			//mir hats pressiert, deswegen hab ichs auskommentiert bis ich check was du da vorhast
         sprintf(buffer_count, "Counter: %8d", frequency_Counted);
         lcd_WriteString(10,10,0x0000,0xFFFF, buffer_count);
         sprintf(buffer_capt, "Capture: %8d", frequency_Captured);
@@ -203,7 +196,7 @@ int main(void)
         old_keyboard = new_keyboard;
         new_keyboard = keyboard_Read();
         led_Write(new_keyboard);
-        keyboard_Check(old_keyboard, new_keyboard, &keyboard);
+        keyboard_Check(old_keyboard, new_keyboard);
 
         /*
          * Checking timer7 conditions

@@ -3,9 +3,9 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: µVision V5.28.0.0
+IDE-Version: ÂµVision V5.28.0.0
 Copyright (C) 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: Thomas Egen, Technische Hochschule Ingolstadt, LIC=----
+License Information: Max Malinowski, THI Ingolstadt, LIC=----
  
 Tool Versions:
 Toolchain:       MDK-Lite  Version: 5.28.0.0
@@ -21,7 +21,7 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.6.0
 Dialog DLL:      TCM.DLL V1.36.2.0
  
 <h2>Project:</h2>
-C:\Users\the86\Documents\Programmieren\Workspace MCPraktikum\microcontroller\MCPraktikum.uvprojx
+C:\Users\maxma\Documents\MCT Praktikum\MCPraktikum.uvprojx
 Project File Date:  12/03/2019
 
 <h2>Output:</h2>
@@ -30,31 +30,25 @@ Rebuild target 'Discovery Board - RAM'
 compiling blinky.c...
 compiling _mcpr_stm32f407.c...
 compiling main.c...
-main.c(206): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *"
-          keyboard_Check(old_keyboard, new_keyboard, &keyboard);
-main.c: 1 warning, 0 errors
+compiling leds.c...
 compiling display.c...
 compiling keyboard.c...
-compiling leds.c...
-compiling lin.c...
-compiling frequency.c...
 compiling timer.c...
+compiling frequency.c...
+compiling lin.c...
 assembling startup_stm32f407xx.s...
 compiling system_stm32f4xx.c...
 linking...
-.\Objects\MCPraktikum.axf: Error: L6200E: Symbol keyboard multiply defined (by keyboard.o and main.o).
-Not enough information to list image symbols.
-Not enough information to list load addresses in the image map.
-Finished: 2 information, 0 warning and 1 error messages.
-".\Objects\MCPraktikum.axf" - 1 Error(s), 1 Warning(s).
+Program Size: Code=4322 RO-data=8642 RW-data=64 ZI-data=1632  
+".\Objects\MCPraktikum.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
 Package Vendor: ARM
-                http://www.keil.com/pack/ARM.CMSIS.5.6.0.pack
-                ARM.CMSIS.5.6.0
+                http://www.keil.com/pack/ARM.CMSIS.5.5.1.pack
+                ARM.CMSIS.5.5.1
                 CMSIS (Cortex Microcontroller Software Interface Standard)
-   * Component: CORE Version: 5.3.0
+   * Component: CORE Version: 5.2.0
 
 Package Vendor: Keil
                 http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.14.0.pack
@@ -64,12 +58,12 @@ Package Vendor: Keil
 
 <h2>Collection of Component include folders:</h2>
   .\RTE\_Discovery_Board_-_RAM
-  C:\Users\the86\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include
-  C:\Users\the86\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+  C:\Users\maxma\AppData\Local\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include
+  C:\Users\maxma\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
 
-   * Component: ARM::CMSIS:CORE:5.3.0
+   * Component: ARM::CMSIS:CORE:5.2.0
 
    * Component: Keil::Device:Startup:2.6.3
       Source file:   MDK\Device\Source\ARM\STM32F40xxx_41xxx_OPT.s
@@ -77,8 +71,7 @@ Package Vendor: Keil
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
       Include file:  Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c
-Target not created.
-Build Time Elapsed:  00:00:17
+Build Time Elapsed:  00:00:33
 </pre>
 </body>
 </html>

@@ -14,7 +14,7 @@ void lin_Init(void)
     USART6 -> CR1 |= 0x0000206A;                // enable RE, TE, RXNEIE, TCIE, UE
     USART6 -> CR2 |= 0x00004040;                // enable LINEN, LBDIE
     NVIC_SetPriority(USART6_IRQn, 0);           // set interrupt priority
-   // NVIC_Enable_IRQ(USART6_IRQn);                // enable interrupt//hier ist irgendein fehler
+    NVIC_EnableIRQ(USART6_IRQn);                // enable interrupt
 }
 
 
@@ -38,13 +38,37 @@ uint8_t lin_Checksum(uint8_t* dataptr, uint8_t size, uint8_t id)
 }
 
 
-
-void lin_PackData(uint8_t id, uint8_t* dataptr, uint8_t size, char* lin_result)
+void lin_SendPwm(uint8_t *data, uint8_t size, uint8_t id, char* lin)
 {
-    uint8_t i = 0;
-    for (i = 0; i < size; i++)
-    {
-        lin_result[i] = dataptr[i];
-    }
-    lin_result[size] = lin_Checksum(dataptr, size, id);
+	uint8_t i = 0;
+	for (i = 0; i < size; i++)
+	{
+		lin[i] = *data;
+	}	
+	lin[size] = lin_Checksum((uint8_t*) lin, size, 0x18);
+	USART6 -> DR = *lin << 8;
+}
+	
+
+void lin_SendFreq(uint32_t *data, uint8_t size, uint8_t id, char* lin)
+{
+	uint8_t i = 0;
+	for (i = 0; i < size; i++)
+	{
+		lin[i] = *data;
+	}	
+	lin[size] = lin_Checksum((uint8_t*) lin, size, 0x18);
+	USART6 -> DR = *lin << 8;
+}
+	
+
+void lin_SendKeys(uint16_t *data, uint8_t size, uint8_t id, char* lin)
+{
+	uint8_t i = 0;
+	for (i = 0; i < size; i++)
+	{
+		lin[i] = *data;
+	}	
+	lin[size] = lin_Checksum((uint8_t*) lin, size, 0x18);
+	USART6 -> DR = *lin << 8;
 }

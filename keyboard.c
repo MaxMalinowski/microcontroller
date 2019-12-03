@@ -57,8 +57,9 @@ void short2Bitstring(uint16_t keys, char* array)
 	array[16] = '\0';
 }
 
-void keyboard_Check(uint16_t old_key, uint16_t new_key, char* keyboard)
+void keyboard_Check(uint16_t old_key, uint16_t new_key)
 {
+		char* keyboard;
     short2Bitstring(new_key, keyboard);
     lcd_WriteString(10, 100, 0x0000, 0xFFFF, keyboard);
 
