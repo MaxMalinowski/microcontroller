@@ -422,6 +422,11 @@
               <FileType>1</FileType>
               <FilePath>.\frequency.c</FilePath>
             </File>
+            <File>
+              <FileName>lin.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lin.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -847,6 +852,11 @@
               <FileName>frequency.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\frequency.c</FilePath>
+            </File>
+            <File>
+              <FileName>lin.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lin.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1411,6 +1421,11 @@
               <FileName>frequency.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\frequency.c</FilePath>
+            </File>
+            <File>
+              <FileName>lin.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lin.c</FilePath>
             </File>
           </Files>
         </Group>

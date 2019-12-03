@@ -31,9 +31,9 @@ uint32_t frequency_Counted = 0;         // frequency calculated by counting
 uint32_t frequency_Captured = 0;        // frequency calculated by capturing
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
-char* keyboard;                         // keyboard state
-char* frequency;                        // frequency
-char* pwm;                              // mock data
+uint8_t keyboard;                         // keyboard state
+uint8_t frequency;                        // frequency
+uint8_t pwm;                              // mock data
 char* lin_data;                         // array, where date for lin communication is stored
 
 
@@ -64,10 +64,10 @@ void TIM8_BRK_TIM12_IRQHandler(void) {
     }
 }
 
-void USART6_IRQn(void)
+void UART6_IRQn(void)
 {
     uint16_t status = USART6 -> SR;                 // save status register
-    uint16_t data = USART -> DR;                    // save data register
+    uint16_t data = USART6 -> DR;                    // save data register
     USART6 -> SR = 0;                               // delete all flags to be sure
 
     // state machine
@@ -76,7 +76,7 @@ void USART6_IRQn(void)
         case wait_for_break:
             if (status & 0x00000100)                // check is lbd detected
             {
-                lin_current = wait_for_sync;        // if lbd detected, wait for synch
+                lin_current = wait_for_sync;        // if lbd detected, wait for sync
             }
             break;
         case wait_for_sync:
@@ -86,7 +86,7 @@ void USART6_IRQn(void)
             }
             else
             {
-                lin_current = wait_for_break        // if not sync, wait for lin break
+                lin_current = wait_for_break;        // if not sync, wait for lin break
             }
             break;
         case wait_for_id:
@@ -95,22 +95,23 @@ void USART6_IRQn(void)
                 switch (data) {                     // check if received data is relevant identifier
                     case 0x18:                      // send temp / pwm
                         lin_current = send_data;
-                        lin_PackData(0x18, &pwm, 1, &lin_data);
-                        USART6 -> DR = lin_data << 8;
+                        lin_PackData(0x18, &pwm, 1, lin_data);
+                        USART6 -> DR = *lin_data << 8;
                         break;
                     case 0x28:                      // send frequency
                         lin_current = send_data;
-                        lin_PackData(0x28, &frequency, 4, &lin_data);
-                        USART6 -> DR = lin_data << 8;
+                        lin_PackData(0x28, &frequency, 4, lin_data);
+                        USART6 -> DR = *lin_data << 8;
                         break;
                     case 0x38:                      // send keyboard
                         lin_current = send_data;
-                        lin_PackData(0x38, &keyboard, 2, &lin_data);
-                        USART6 -> DR = lin_data << 8;
+                        lin_PackData(0x38, &keyboard, 2, lin_data);
+                        USART6 -> DR = *lin_data << 8;
                         break;
                     default:                        // identifier not relevant
                         lin_current = wait_for_break;
-            }
+									}
+						}
             else
             {
                 lin_current = wait_for_break;
@@ -119,9 +120,9 @@ void USART6_IRQn(void)
         case send_data:
             if (status & 0x00000040)                // check if data was send
             {
-                if (lin_data[0] != 0x0000)          // check if data to send
+                if (*lin_data != 0x0000)          // check if data to send
                 {
-                    USART6 -> DR = lin_data << 8;   // if data left, shift into data register
+                    USART6 -> DR = *lin_data << 8;   // if data left, shift into data register
                 }
                 else
                 {
@@ -180,14 +181,16 @@ int main(void)
         timer12_CheckCounter(&milliSec, &frequency_Counted);
         timer12_CaptureInit();
         timer12_CheckCapture(&frequency_Captured, &capt_old, &capt_new, &tim12_count);
-        if (frequency_Captured > 1000000)
+     /*   if (frequency_Captured > 1000000)
         {
             frequency = int2Bitstring(&frequency_Captured);
         }
         else
         {
             frequency = int2Bitstring(&frequency_Counted)
-        }
+        }*/
+			
+			//mir hats pressiert, deswegen hab ichs auskommentiert bis ich check was du da vorhast
         sprintf(buffer_count, "Counter: %8d", frequency_Counted);
         lcd_WriteString(10,10,0x0000,0xFFFF, buffer_count);
         sprintf(buffer_capt, "Capture: %8d", frequency_Captured);
@@ -200,7 +203,7 @@ int main(void)
         old_keyboard = new_keyboard;
         new_keyboard = keyboard_Read();
         led_Write(new_keyboard);
-        keyboard_Check(old_keyboard, new_keyboard, keyboard);
+        keyboard_Check(old_keyboard, new_keyboard, &keyboard);
 
         /*
          * Checking timer7 conditions

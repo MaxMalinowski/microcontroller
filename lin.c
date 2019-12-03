@@ -1,5 +1,7 @@
 #include "lin.h"
 #include "inttypes.h"
+#include "STM32F4xx.h"
+#include "_mcpr_stm32f407.h"
 
 
 void lin_Init(void)
@@ -12,7 +14,7 @@ void lin_Init(void)
     USART6 -> CR1 |= 0x0000206A;                // enable RE, TE, RXNEIE, TCIE, UE
     USART6 -> CR2 |= 0x00004040;                // enable LINEN, LBDIE
     NVIC_SetPriority(USART6_IRQn, 0);           // set interrupt priority
-    NVIC_Enable_IRQ(USART_IRQn);                // enable interrupt
+   // NVIC_Enable_IRQ(USART6_IRQn);                // enable interrupt//hier ist irgendein fehler
 }
 
 
@@ -24,7 +26,7 @@ uint8_t lin_Checksum(uint8_t* dataptr, uint8_t size, uint8_t id)
 
     for(i = 0; i < size; i++)
     {
-        tmp =+ dataptr[i];          // add byte and save with carry
+        tmp += dataptr[i];          // add byte and save with carry
         res = tmp;                  // save into 8bit -> discard carry
         if (tmp > 0xFF)             // check if carry exitst
         {
