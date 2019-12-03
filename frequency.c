@@ -62,3 +62,23 @@ void timer12_CheckCapture(uint32_t* freq_Capt, volatile uint32_t* capt_old, vola
     *freq_Capt = 84000000 / difference;					// save frequncy
 }
 
+
+
+void int2Bitstring(uint32_t keys, char* array)
+{
+    uint16_t i = 0;
+
+    for(i = 0; i < 32; i++)
+    {
+        if(((0x00000001 << i) & keys))
+        {
+            array[32-i] = '1';
+        }
+        else
+        {
+            array[32-i] = '0';
+        }
+    }
+    array[32] = '\0';
+}
+

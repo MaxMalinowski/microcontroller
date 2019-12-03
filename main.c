@@ -17,7 +17,7 @@
  */
 volatile uint32_t milliSec = 0;         // global milliseconds
 volatile uint32_t capt_old = 0;         // old frequency captured
-volatile uint32_t capt_new = 0;         // new frequency caputred
+volatile uint32_t capt_new = 0;         // new frequency captured
 volatile uint8_t tim12_count = 0;       // count number of interrupts
 
 
@@ -31,12 +31,18 @@ uint32_t frequency_Counted = 0;         // frequency calculated by counting
 uint32_t frequency_Captured = 0;        // frequency calculated by capturing
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
+char* keyboard;                         // keyboard state
+char* frequency;                        // frequency
+char* pwm;                              // mock data
+char* lin_data;                         // array, where date for lin communication is stored
+
 
 /*
  * states for lin communication
+ * initial state: wait for lin break
  */
 enum lin_state {wait_for_break, wait_for_sync, wait_for_id, send_data};
-
+enum lin_state lin_current = wait_for_break;
 
 
 /*
@@ -60,21 +66,72 @@ void TIM8_BRK_TIM12_IRQHandler(void) {
 
 void USART6_IRQn(void)
 {
-    // delete st flag
+    uint16_t status = USART6 -> SR;                 // save status register
+    uint16_t data = USART -> DR;                    // save data register
+    USART6 -> SR = 0;                               // delete all flags to be sure
+
     // state machine
-    switch lin_state {
+    switch (lin_current)
+    {
         case wait_for_break:
-            // check lbd
+            if (status & 0x00000100)                // check is lbd detected
+            {
+                lin_current = wait_for_sync;        // if lbd detected, wait for synch
+            }
             break;
         case wait_for_sync:
-            // check received
+            if (status & 0x00000002)                // check if sync break detected
+            {
+                lin_current = wait_for_id;          // if sync detected, wait for id
+            }
+            else
+            {
+                lin_current = wait_for_break        // if not sync, wait for lin break
+            }
             break;
         case wait_for_id:
-            // if received and right id
-            // else
+            if (status & 0x00000020)                // check if data received
+            {
+                switch (data) {                     // check if received data is relevant identifier
+                    case 0x18:                      // send temp / pwm
+                        lin_current = send_data;
+                        lin_PackData(0x18, &pwm, 1, &lin_data);
+                        USART6 -> DR = lin_data << 8;
+                        break;
+                    case 0x28:                      // send frequency
+                        lin_current = send_data;
+                        lin_PackData(0x28, &frequency, 4, &lin_data);
+                        USART6 -> DR = lin_data << 8;
+                        break;
+                    case 0x38:                      // send keyboard
+                        lin_current = send_data;
+                        lin_PackData(0x38, &keyboard, 2, &lin_data);
+                        USART6 -> DR = lin_data << 8;
+                        break;
+                    default:                        // identifier not relevant
+                        lin_current = wait_for_break;
+            }
+            else
+            {
+                lin_current = wait_for_break;
+            }
             break;
         case send_data:
-            // if byte send and something to send
+            if (status & 0x00000040)                // check if data was send
+            {
+                if (lin_data[0] != 0x0000)          // check if data to send
+                {
+                    USART6 -> DR = lin_data << 8;   // if data left, shift into data register
+                }
+                else
+                {
+                    lin_current = wait_for_break;   // else wait for lin break
+                }
+            }
+            else
+            {
+                lin_current = wait_for_break;       // else wait for lin break
+            }
             break;
         default:
             break;
@@ -106,7 +163,6 @@ int main(void)
      */
     uint16_t old_keyboard = 0x0000;
     uint16_t new_keyboard = 0x0000;
-    char* keyboard;
     char buffer_count[32];
     char buffer_capt[32];
 
@@ -124,6 +180,14 @@ int main(void)
         timer12_CheckCounter(&milliSec, &frequency_Counted);
         timer12_CaptureInit();
         timer12_CheckCapture(&frequency_Captured, &capt_old, &capt_new, &tim12_count);
+        if (frequency_Captured > 1000000)
+        {
+            frequency = int2Bitstring(&frequency_Captured);
+        }
+        else
+        {
+            frequency = int2Bitstring(&frequency_Counted)
+        }
         sprintf(buffer_count, "Counter: %8d", frequency_Counted);
         lcd_WriteString(10,10,0x0000,0xFFFF, buffer_count);
         sprintf(buffer_capt, "Capture: %8d", frequency_Captured);
