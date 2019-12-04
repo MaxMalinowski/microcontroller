@@ -42,8 +42,8 @@ char lin_data [5];                      // array, where date for lin communicati
  * states for lin communication
  * initial state: wait for lin break
  */
-enum lin_state {wait_for_break, wait_for_sync, wait_for_id, send_data};
-enum lin_state lin_mode = wait_for_break;
+enum lin_state {WAIT_FOR_BREAK, WAIT_FOR_SYNC, WAIT_FOR_ID, SEND_DATA};
+enum lin_state lin_mode = WAIT_FOR_BREAK;
 
 
 /*
@@ -74,64 +74,64 @@ void USART6_IRQHandler(void)
     // state machine
     switch (lin_mode)
     {
-        case wait_for_break:
+        case WAIT_FOR_BREAK:
             if (status & 0x100)                     	// check if lbd detected
             {
-                lin_mode = wait_for_sync;           	// if lbd detected, wait for sync
+                lin_mode = WAIT_FOR_SYNC;           	// if lbd detected, wait for sync
             }
             break;
 
-        case wait_for_sync:
+        case WAIT_FOR_SYNC:
             if ((status & 0x20) && (data == 0x55))  	// check if sync break detected
             {
-                lin_mode = wait_for_id;             	// if sync detected, wait for id
+                lin_mode = WAIT_FOR_ID;             	// if sync detected, wait for id
             }
             else
             {
-                lin_mode = wait_for_break;          	// if not sync, wait for lin break
+                lin_mode = WAIT_FOR_BREAK;          	// if not sync, wait for lin break
             }
             break;
 
-        case wait_for_id:
+        case WAIT_FOR_ID:
             if (status & 0x20)                      	// check if data received
             {
 				uint32_t tmp = 0;
                 switch (data & ~0xC0) 		    		// check if received data is our identifier
                 {
                     case 0x18:                      	// send milliseconds
-                        lin_mode = send_data;
+                        lin_mode = SEND_DATA;
 						size = 2;
 						tmp = milliSec;
                         lin_Send(&tmp, size, 0x18, lin_data);
                         break;
 
 					case 0x28:                      	// send frequency
-                        lin_mode = send_data;
+                        lin_mode = SEND_DATA;
                         size = 4;
                         tmp = frequency_Counted;
                         lin_Send(&tmp, size, 0x18, lin_data);
                         break;
 
                     case 0x38:                      	// send keyboard
-                        lin_mode = send_data;
+                        lin_mode = SEND_DATA;
 						size = 2;
                         tmp = new_keyboard;
                         lin_Send(&tmp, size, 0x18, lin_data);
                         break;
 
                     default:                        	// identifier not relevant
-                        lin_mode = wait_for_break;
+                        lin_mode = WAIT_FOR_BREAK;
 						break;
                 }
             }
             else
             {
-				lin_mode = wait_for_break;
+				lin_mode = WAIT_FOR_BREAK;
             }
             break;
 
-        case send_data:
-            if (status & 0x40) && )						// check if data was send
+        case SEND_DATA:
+            if (status & 0x40)						// check if data was send
             {
 				if (sending_pos <= size)				// check if data left to send
 				{
@@ -139,7 +139,7 @@ void USART6_IRQHandler(void)
 				}
 				else
 				{
-					lin_mode = wait_for_break; 
+					lin_mode = WAIT_FOR_BREAK; 
                 	sending_pos = 1;
 				}
 			}

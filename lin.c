@@ -9,10 +9,10 @@ void lin_Init(void)
     RCC -> AHB1ENR |= 0x00000004;               // enable clock for GPIOC
     GPIOB -> MODER |= 0x00000010;               // set PB2 as output
     GPIOC -> MODER |= 0x00006000;               // set Pin 6 to alternate and 7 to output
-	GPIOC -> ODR  |= 0x00000040;                // send high level on pc7
-	GPIOB -> ODR |= 0x00000004;                 // send high level on pb2
-    GPIOC -> MODER = 0x0000A000;		        // set pc7 to alternate mode
-	GPIOC -> AFR[0] |= 0x88000000;              // select alternate functions
+		GPIOC -> ODR  |= 0x00000040;                // send high level on pc7
+		GPIOB -> ODR |= 0x00000004;                 // send high level on pb2
+    GPIOC -> MODER = 0x0000A000;		       			// set pc7 to alternate mode
+		GPIOC -> AFR[0] |= 0x88000000;              // select alternate functions
     RCC -> APB2ENR |= 0x00000020;               // enable clock for usart6
     USART6 -> BRR = 0x00001117;                 // set baudrate 273,4375
     USART6 -> CR1 |= 0x0000206C;                // enable RE, TE, RXNEIE, TCIE, UE
@@ -37,13 +37,12 @@ uint8_t lin_Checksum(uint8_t* dataptr, uint8_t size, uint8_t id)
             res++;                  // if carry, add one to lsb
         }
     }
-
     return ~res;                    // return bit inverted
 }
 
 void lin_Send(uint32_t *data, uint8_t size, uint8_t id, char *lin_data)
 {
-	int i;
+		int i;
     for(i = size - 1; i >= 0; i--)
     {
         lin_data[i] = *data >> i * 8;
