@@ -14,6 +14,7 @@ uint16_t difference = 0;
 
 void timer12_Init(void)
 {
+	
     RCC -> APB1ENR |= 0x00000040;               // Enable clock for Timer 12
     RCC -> AHB1ENR |= 0x00000002;               // Enable clock for GPIOB
     GPIOB -> MODER |= 0x20000000;               // Set GPIOB PIN 14 to alternate function
