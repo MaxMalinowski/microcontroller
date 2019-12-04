@@ -11,7 +11,7 @@
 
 
 /*
- * volatile global variables
+ * volatile variables
  * Can change any time (in interrupt)
  * Compiler know through volatile keyword
  */
@@ -22,21 +22,20 @@ volatile uint8_t tim12_count = 0;       // count number of interrupts
 
 
 /*
- * normal global variables
+ * normal variables
  */
 uint32_t mainTime = 0;                  // time for main routine
 uint32_t greenTime = 0;                 // time for greed led
 uint32_t backgroundTime = 0;            // time for background
 uint32_t frequency_Counted = 0;         // frequency calculated by counting
 uint32_t frequency_Captured = 0;        // frequency calculated by capturing
-uint16_t old_keyboard = 0;				// previous keyboard state
-uint16_t new_keyboard = 0;				// current keyboard state
+uint16_t old_keyboard = 0;							// previous keyboard state
+uint16_t new_keyboard = 0;							// current keyboard state
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
-uint16_t pwm = 0x1234;                  // mock data
+uint8_t sending_pos = 1;                // current position in lin_data
+uint8_t size = 0;                				// length of lin_data
 char lin_data [5];                      // array, where date for lin communication is stored
-uint8_t position = 1;
-uint8_t ende = 0;
 
 
 /*
@@ -59,7 +58,7 @@ void TIM8_BRK_TIM12_IRQHandler(void) {
     TIM12 -> SR = 0;                            // reset status register
     capt_old = capt_new;                        // save old frequency value
     capt_new = TIM12 -> CCR1;                   // get new frequency value
-		tim12_count++;
+    tim12_count++;
     if(tim12_count > 2)                         // check number of interrupts
     {
         NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn);   // if more then 3 interrupts, all values we need
@@ -76,72 +75,73 @@ void USART6_IRQHandler(void)
     switch (lin_mode)
     {
         case wait_for_break:
-            if (status & 0x00000100)                // check is lbd detected
+            if (status & 0x100)                     // check if lbd detected
             {
-                lin_mode = wait_for_sync;        // if lbd detected, wait for sync
+                lin_mode = wait_for_sync;           // if lbd detected, wait for sync
             }
             break;
+
         case wait_for_sync:
-            if ((status & 0x00000020) && (data == 0x55))                // check if sync break detected
+            if ((status & 0x20) && (data == 0x55))  // check if sync break detected
             {
-                lin_mode = wait_for_id;          // if sync detected, wait for id
+                lin_mode = wait_for_id;             // if sync detected, wait for id
             }
             else
             {
-                lin_mode = wait_for_break;        // if not sync, wait for lin break //??
+                lin_mode = wait_for_break;          // if not sync, wait for lin break
             }
             break;
+
         case wait_for_id:
-            if (status & 0x00000020)                // check if data received
+            if (status & 0x20)                      // check if data received
             {
-								switch (data & ~0xC0) 							// check if received data is relevant identifier
-									{             
-                    case 0x18:                      // send temp / pwm
+								uint32_t tmp = 0;
+                switch (data & ~0xC0) 							// check if received data is our identifier
+                {
+                    case 0x18:                      // send milliseconds
                         lin_mode = send_data;
-												ende = 2;
-												lin_SendPwm(&pwm, 2, 0x18, lin_data);
+												size = 2;
+												tmp = milliSec;
+                        lin_Send(&tmp, size, 0x18, lin_data);
                         break;
-										case 0x28:                      // send more accurate frequency
-                                            lin_mode = send_data;
-												ende = 4;
-												if (frequency_Captured > 2000000)
-												{
-													lin_SendFreq(&frequency_Captured, 4, 0x28, lin_data);
-												}
-												else
-												{
-													lin_SendFreq(&frequency_Counted, 4, 0x28, lin_data);
-												}
+
+										case 0x28:                      // send frequency
+                        lin_mode = send_data;
+                        size = 4;
+                        tmp = frequency_Counted;
+                        lin_Send(&tmp, size, 0x18, lin_data);
                         break;
+
                     case 0x38:                      // send keyboard
                         lin_mode = send_data;
-										ende = 2;
-												lin_SendKeys(&new_keyboard, 2, 0x38, lin_data);
+												size = 2;
+                        tmp = new_keyboard;
+                        lin_Send(&tmp, size, 0x18, lin_data);
                         break;
+
                     default:                        // identifier not relevant
                         lin_mode = wait_for_break;
 												break;
-									}
-						}
+                }
+            }
             else
             {
-                lin_mode = wait_for_break;
+								lin_mode = wait_for_break;
             }
             break;
+
         case send_data:
-            if (status & 0x00000040)                // check if data was send
+            if ((status & 0x40) && (sending_pos <= size))     // check if data was send
             {
-                if (position <= ende)          			// check if data to send
-                {
-										USART6 -> DR = lin_data[position++];  			// if data left, shift into data register
-                }
-                else
-                {
-                    lin_mode = wait_for_break;   // else wait for lin break
-										position =1;
-                }
+								USART6 -> DR = lin_data[sending_pos++];  			// if data left, shift into data register
+            }
+            else if ((status & 0x40) && (sending_pos > size))
+            {
+                lin_mode = wait_for_break;  									// else wait for lin break
+                sending_pos = 1;
             }
             break;
+
         default:
             break;
     }
@@ -213,5 +213,3 @@ int main(void)
         while (milliSec < (mainTime + 50)) {}
     }
 }
-
-
