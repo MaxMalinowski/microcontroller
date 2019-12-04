@@ -29,12 +29,14 @@ uint32_t greenTime = 0;                 // time for greed led
 uint32_t backgroundTime = 0;            // time for background
 uint32_t frequency_Counted = 0;         // frequency calculated by counting
 uint32_t frequency_Captured = 0;        // frequency calculated by capturing
-uint16_t old_keyboard = 0;							// previous keyboard state
-uint16_t new_keyboard = 0;							// current keyboard state
+uint16_t old_keyboard = 0;				// previous keyboard state
+uint16_t new_keyboard = 0;				// current keyboard state
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
-uint8_t pwm;                            // mock data
-char* lin_data;                         // array, where date for lin communication is stored
+uint16_t pwm = 0x1234;                  // mock data
+char lin_data [5];                      // array, where date for lin communication is stored
+uint8_t position = 1;
+uint8_t ende = 0;
 
 
 /*
@@ -42,7 +44,7 @@ char* lin_data;                         // array, where date for lin communicati
  * initial state: wait for lin break
  */
 enum lin_state {wait_for_break, wait_for_sync, wait_for_id, send_data};
-enum lin_state lin_current = wait_for_break;
+enum lin_state lin_mode = wait_for_break;
 
 
 /*
@@ -57,36 +59,36 @@ void TIM8_BRK_TIM12_IRQHandler(void) {
     TIM12 -> SR = 0;                            // reset status register
     capt_old = capt_new;                        // save old frequency value
     capt_new = TIM12 -> CCR1;                   // get new frequency value
-    if(tim12_count++ > 3)                       // check number of interrupts
+		tim12_count++;
+    if(tim12_count > 2)                         // check number of interrupts
     {
         NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn);   // if more then 3 interrupts, all values we need
-        tim12_count = 0;                        // disable interrupt and set counter to 0 for next time
     }
 }
 
-void UART6_IRQn(void)
+void USART6_IRQHandler(void)
 {
     uint16_t status = USART6 -> SR;                 // save status register
-    uint16_t data = USART6 -> DR;                    // save data register
+    uint8_t data = USART6 -> DR;                    // save data register
     USART6 -> SR = 0;                               // delete all flags to be sure
 
     // state machine
-    switch (lin_current)
+    switch (lin_mode)
     {
         case wait_for_break:
             if (status & 0x00000100)                // check is lbd detected
             {
-                lin_current = wait_for_sync;        // if lbd detected, wait for sync
+                lin_mode = wait_for_sync;        // if lbd detected, wait for sync
             }
             break;
         case wait_for_sync:
-            if (status & 0x00000002)                // check if sync break detected
+            if ((status & 0x00000020) && (data == 0x55))                // check if sync break detected
             {
-                lin_current = wait_for_id;          // if sync detected, wait for id
+                lin_mode = wait_for_id;          // if sync detected, wait for id
             }
             else
             {
-                lin_current = wait_for_break;        // if not sync, wait for lin break
+                lin_mode = wait_for_break;        // if not sync, wait for lin break //??
             }
             break;
         case wait_for_id:
@@ -95,48 +97,49 @@ void UART6_IRQn(void)
 								switch (data & ~0xC0) 							// check if received data is relevant identifier
 									{             
                     case 0x18:                      // send temp / pwm
-                        lin_current = send_data;
-												lin_SendPwm(&pwm, 1, 0x18, lin_data);
+                        lin_mode = send_data;
+												ende = 2;
+												lin_SendPwm(&pwm, 2, 0x18, lin_data);
                         break;
-                    case 0x28:                      // send more accurate frequency
-                        lin_current = send_data;
-												if (frequency_Captured > 1000000)
-												{
-													lin_SendFreq(&frequency_Counted, 4, 0x28, lin_data);
-												}
-												else
+										case 0x28:                      // send more accurate frequency
+                                            lin_mode = send_data;
+												ende = 4;
+												if (frequency_Captured > 2000000)
 												{
 													lin_SendFreq(&frequency_Captured, 4, 0x28, lin_data);
 												}
+												else
+												{
+													lin_SendFreq(&frequency_Counted, 4, 0x28, lin_data);
+												}
                         break;
                     case 0x38:                      // send keyboard
-                        lin_current = send_data;
+                        lin_mode = send_data;
+										ende = 2;
 												lin_SendKeys(&new_keyboard, 2, 0x38, lin_data);
                         break;
                     default:                        // identifier not relevant
-                        lin_current = wait_for_break;
+                        lin_mode = wait_for_break;
+												break;
 									}
 						}
             else
             {
-                lin_current = wait_for_break;
+                lin_mode = wait_for_break;
             }
             break;
         case send_data:
             if (status & 0x00000040)                // check if data was send
             {
-                if (*lin_data != 0x0000)          	// check if data to send
+                if (position <= ende)          			// check if data to send
                 {
-                    USART6 -> DR = *lin_data << 8;  // if data left, shift into data register
+										USART6 -> DR = lin_data[position++];  			// if data left, shift into data register
                 }
                 else
                 {
-                    lin_current = wait_for_break;   // else wait for lin break
+                    lin_mode = wait_for_break;   // else wait for lin break
+										position =1;
                 }
-            }
-            else
-            {
-                lin_current = wait_for_break;       // else wait for lin break
             }
             break;
         default:

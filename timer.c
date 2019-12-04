@@ -13,7 +13,7 @@ void timer7_Init(void)
 	TIM7 -> PSC |= 0x00000014;		        // set prescaler to 20
 	TIM7 -> ARR = 0x00000F9F;		        	// set auto-reload register to 3999
 	TIM7 -> DIER |= 0x00000001;		        // enable interrupt if overflow
-	NVIC_SetPriority(TIM7_IRQn, 0);       // set interrupt priority
+	NVIC_SetPriority(TIM7_IRQn, 5);       // set interrupt priority
 	NVIC_EnableIRQ(TIM7_IRQn);            // enable interrupt in nvic
 	TIM7 -> CR1 |= 0x00000001;		        // enable counter
 }

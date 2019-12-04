@@ -13,3 +13,4 @@
 .\objects\keyboard.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
 .\objects\keyboard.o: display.h
 .\objects\keyboard.o: blinky.h
+.\objects\keyboard.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

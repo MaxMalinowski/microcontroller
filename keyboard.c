@@ -4,6 +4,7 @@
 #include "display.h"
 #include "blinky.h"
 #include "inttypes.h"
+#include "stdio.h"
 
 volatile uint16_t old_key = 0;
 volatile uint16_t new_key = 0;
@@ -59,7 +60,8 @@ void short2Bitstring(uint16_t keys, char* array)
 
 void keyboard_Check(uint16_t old_key, uint16_t new_key)
 {
-		char* keyboard;
+		char keyboard[16];
+		//sprintf(keyboard, "Keyboard: %8d", new_key);
     short2Bitstring(new_key, keyboard);
     lcd_WriteString(10, 100, 0x0000, 0xFFFF, keyboard);
 
