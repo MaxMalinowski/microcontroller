@@ -29,12 +29,12 @@ uint32_t greenTime = 0;                 // time for greed led
 uint32_t backgroundTime = 0;            // time for background
 uint32_t frequency_Counted = 0;         // frequency calculated by counting
 uint32_t frequency_Captured = 0;        // frequency calculated by capturing
-uint16_t old_keyboard = 0;							// previous keyboard state
-uint16_t new_keyboard = 0;							// current keyboard state
+uint16_t old_keyboard = 0;		// previous keyboard state
+uint16_t new_keyboard = 0;		// current keyboard state
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
 uint8_t sending_pos = 1;                // current position in lin_data
-uint8_t size = 0;                				// length of lin_data
+uint8_t size = 0;                	// length of lin_data
 char lin_data [5];                      // array, where date for lin communication is stored
 
 
@@ -67,79 +67,82 @@ void TIM8_BRK_TIM12_IRQHandler(void) {
 
 void USART6_IRQHandler(void)
 {
-    uint16_t status = USART6 -> SR;                 // save status register
-    uint8_t data = USART6 -> DR;                    // save data register
-    USART6 -> SR = 0;                               // delete all flags to be sure
+    uint16_t status = USART6 -> SR;                 	// save status register
+    uint8_t data = USART6 -> DR;                    	// save data register
+    USART6 -> SR = 0;                               	// delete all flags to be sure
 
     // state machine
     switch (lin_mode)
     {
         case wait_for_break:
-            if (status & 0x100)                     // check if lbd detected
+            if (status & 0x100)                     	// check if lbd detected
             {
-                lin_mode = wait_for_sync;           // if lbd detected, wait for sync
+                lin_mode = wait_for_sync;           	// if lbd detected, wait for sync
             }
             break;
 
         case wait_for_sync:
-            if ((status & 0x20) && (data == 0x55))  // check if sync break detected
+            if ((status & 0x20) && (data == 0x55))  	// check if sync break detected
             {
-                lin_mode = wait_for_id;             // if sync detected, wait for id
+                lin_mode = wait_for_id;             	// if sync detected, wait for id
             }
             else
             {
-                lin_mode = wait_for_break;          // if not sync, wait for lin break
+                lin_mode = wait_for_break;          	// if not sync, wait for lin break
             }
             break;
 
         case wait_for_id:
-            if (status & 0x20)                      // check if data received
+            if (status & 0x20)                      	// check if data received
             {
-								uint32_t tmp = 0;
-                switch (data & ~0xC0) 							// check if received data is our identifier
+				uint32_t tmp = 0;
+                switch (data & ~0xC0) 		    		// check if received data is our identifier
                 {
-                    case 0x18:                      // send milliseconds
+                    case 0x18:                      	// send milliseconds
                         lin_mode = send_data;
-												size = 2;
-												tmp = milliSec;
+						size = 2;
+						tmp = milliSec;
                         lin_Send(&tmp, size, 0x18, lin_data);
                         break;
 
-										case 0x28:                      // send frequency
+					case 0x28:                      	// send frequency
                         lin_mode = send_data;
                         size = 4;
                         tmp = frequency_Counted;
                         lin_Send(&tmp, size, 0x18, lin_data);
                         break;
 
-                    case 0x38:                      // send keyboard
+                    case 0x38:                      	// send keyboard
                         lin_mode = send_data;
-												size = 2;
+						size = 2;
                         tmp = new_keyboard;
                         lin_Send(&tmp, size, 0x18, lin_data);
                         break;
 
-                    default:                        // identifier not relevant
+                    default:                        	// identifier not relevant
                         lin_mode = wait_for_break;
-												break;
+						break;
                 }
             }
             else
             {
-								lin_mode = wait_for_break;
+				lin_mode = wait_for_break;
             }
             break;
 
         case send_data:
-            if ((status & 0x40) && (sending_pos <= size))     // check if data was send
+            if (status & 0x40) && )						// check if data was send
             {
-								USART6 -> DR = lin_data[sending_pos++];  			// if data left, shift into data register
-            }
-            else if ((status & 0x40) && (sending_pos > size))
-            {
-                lin_mode = wait_for_break;  									// else wait for lin break
-                sending_pos = 1;
-            }
+				if (sending_pos <= size)				// check if data left to send
+				{
+					USART6 -> DR = lin_data[sending_pos++];  	
+				}
+				else
+				{
+					lin_mode = wait_for_break; 
+                	sending_pos = 1;
+				}
+			}
             break;
 
         default:
