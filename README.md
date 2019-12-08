@@ -17,20 +17,28 @@ Trigger the LEDs on the board.
 
 ## Ex. 4
 
-Trigger the display to print out strings and letters or to clean the display
+Trigger the display to print out strings / letters or to clean the display.
 
 ## Ex. 5
 
-Read the inputs of the keyboard
+Read the inputs of the keyboard and display them.
 
 ## Ex. 6
 
-Use easy Timer7 as a time basis and derive different time from that
+Use easy Timer7 as a time basis and derive different time from that.
 
 ## Ex. 7
 
-Measure an externat frequency using the timer12 peripheral and two different counting methods
+Measure an external frequency using the timer12 peripheral and two different counting methods.
 
 ## Ex. 8
 
 Communicate with an master in a LIN network and respond to certain identifiers with corresponding messages.
+
+## Ex. 9
+
+Read and convert analog values from a potentiometer into digital ones and display them.
+
+## Ex. 10
+
+Using the converted values form the potentiometers, control the position of a throttle.
