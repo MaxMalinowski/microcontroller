@@ -427,6 +427,11 @@
               <FileType>1</FileType>
               <FilePath>.\lin.c</FilePath>
             </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\adc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -857,6 +862,11 @@
               <FileName>lin.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\lin.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\adc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1426,6 +1436,11 @@
               <FileName>lin.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\lin.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\adc.c</FilePath>
             </File>
           </Files>
         </Group>

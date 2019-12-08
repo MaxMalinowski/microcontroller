@@ -1,4 +1,4 @@
-#inlude "inttypes.h"
+#include "inttypes.h"
 
 void adc_Init(void);
 
