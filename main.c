@@ -9,6 +9,7 @@
 #include "frequency.h"
 #include "lin.h"
 #include "adc.h"
+#include "throttle.h
 
 
 /*
@@ -153,11 +154,6 @@ void USART6_IRQHandler(void)
     }
 }
 
-void ADC_IRQHandler(void)
-{
-    // TODO: save Poti values when conversion finished
-}
-
 
 /*
  * MAIN-Function
@@ -177,6 +173,7 @@ int main(void)
     timer12_Init();
     lin_Init();
     adc_Init();
+    throttle_Init();
 
 
     /*
@@ -235,8 +232,9 @@ int main(void)
             {
                 running_st ^= running_st;
             }
-        } else
-            {
+        }
+        else
+        {
             led_Write(new_keyboard);
         }
 
@@ -250,6 +248,10 @@ int main(void)
         sprintf(buffer_secondPoti, "Second Poti: %12d", secondPoti);
         lcd_WriteString(10,170,0x0000,0xFFFF, buffer_secondPoti);
 
+        /*
+         * control throttle with poti values
+         */
+        throttle_Control(uint16_t* firstPoti, uint16_t* secondPoti);
 
         /*
          * Checking timer7 conditions
