@@ -8,6 +8,7 @@
 #include "timer.h"
 #include "frequency.h"
 #include "lin.h"
+#include "adc.h"
 
 
 /*
@@ -29,12 +30,14 @@ uint32_t greenTime = 0;                 // time for greed led
 uint32_t backgroundTime = 0;            // time for background
 uint32_t frequency_Counted = 0;         // frequency calculated by counting
 uint32_t frequency_Captured = 0;        // frequency calculated by capturing
-uint16_t old_keyboard = 0;		// previous keyboard state
-uint16_t new_keyboard = 0;		// current keyboard state
+uint16_t old_keyboard = 0;		        // previous keyboard state
+uint16_t new_keyboard = 0;		        // current keyboard state
+uint16_t firstPoti = 0;                 // value form first poti
+uint16_t secondPoti = 0;                // value form second poti
 uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
 uint8_t sending_pos = 1;                // current position in lin_data
-uint8_t size = 0;                	// length of lin_data
+uint8_t size = 0;                	    // length of lin_data
 char lin_data [5];                      // array, where date for lin communication is stored
 
 
@@ -131,7 +134,7 @@ void USART6_IRQHandler(void)
             break;
 
         case SEND_DATA:
-            if (status & 0x40)						// check if data was send
+            if (status & 0x40)						    // check if data was send
             {
 				if (sending_pos <= size)				// check if data left to send
 				{
@@ -148,6 +151,11 @@ void USART6_IRQHandler(void)
         default:
             break;
     }
+}
+
+void ADC_IRQHandler(void)
+{
+    // TODO: save Poti values when conversion finished
 }
 
 
@@ -168,6 +176,7 @@ int main(void)
     timer7_Init();
     timer12_Init();
     lin_Init();
+    adc_Init();
 
 
     /*
@@ -175,6 +184,10 @@ int main(void)
      */
     char buffer_count[32];
     char buffer_capt[32];
+    char buffer_firstPoti[32];
+    char buffer_secondPoti[32];
+    uint16_t running_cnt = 0;
+    uint8_t running_st = 0;
 
     /*
      * loop forever
@@ -197,12 +210,46 @@ int main(void)
 
         /*
          * Reading keyboard input
-         * Displaying input on lcd and led's
+         * Displaying input on lcd
          */
         old_keyboard = new_keyboard;
         new_keyboard = keyboard_Read();
-        led_Write(new_keyboard);
         keyboard_Check(old_keyboard, new_keyboard);
+
+        /*
+         * If key on keyboard pressed, light up led
+         * Else display running led light
+         */
+        if (new_keyboard == 0x00000000)
+        {
+            if (running_st == 0)
+            {
+                led_Write(0x00000000 << (1 * running_cnt++));
+            }
+            else
+            {
+                led_Write(~(0x00000000 << (1 * running_cnt++)));
+            }
+            running_cnt = running_cnt % 16;
+            if (running_cnt == 0)
+            {
+                running_st ^= running_st;
+            }
+        } else
+            {
+            led_Write(new_keyboard);
+        }
+
+        /*
+         * Read values of Potis
+         * Print poti values on lcd display
+         */
+        adc_GetPotis(&firstPoti, &secondPoti);
+        sprintf(buffer_firstPoti, "First Poti: %12d", firstPoti);
+        lcd_WriteString(10,130,0x0000,0xFFFF, buffer_firstPoti);
+        sprintf(buffer_secondPoti, "Second Poti: %12d", secondPoti);
+        lcd_WriteString(10,170,0x0000,0xFFFF, buffer_secondPoti);
+
 
         /*
          * Checking timer7 conditions
