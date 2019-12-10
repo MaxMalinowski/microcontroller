@@ -432,6 +432,11 @@
               <FileType>1</FileType>
               <FilePath>.\adc.c</FilePath>
             </File>
+            <File>
+              <FileName>throttle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\throttle.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -867,6 +872,11 @@
               <FileName>adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>throttle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\throttle.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1441,6 +1451,11 @@
               <FileName>adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>throttle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\throttle.c</FilePath>
             </File>
           </Files>
         </Group>

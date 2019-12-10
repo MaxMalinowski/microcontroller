@@ -1,5 +1,5 @@
-#inlcude "inttypes.h"
+#include "inttypes.h"
 
 void throttle_Init(void);
 
-oid throttle_Controll(uint16_t* firstPoti, uint16_t* secondPoti);
+void throttle_Control(uint16_t* firstPoti, uint16_t* secondPoti);

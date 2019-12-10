@@ -9,7 +9,7 @@
 #include "frequency.h"
 #include "lin.h"
 #include "adc.h"
-#include "throttle.h
+#include "throttle.h"
 
 
 /*
@@ -251,7 +251,7 @@ int main(void)
         /*
          * control throttle with poti values
          */
-        throttle_Control(uint16_t* firstPoti, uint16_t* secondPoti);
+        throttle_Control(&firstPoti, &secondPoti);
 
         /*
          * Checking timer7 conditions

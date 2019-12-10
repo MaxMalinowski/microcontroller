@@ -10,9 +10,9 @@ void adc_Init(void)
     GPIOC -> MODER |= 0x0000000F;           // set PC0, PC1 to analog mode
     RCC -> APB2ENR |= 0x00000100;           // turn on clock for ADC1
     ADC1 -> CR2 |= 0x00000003;              // turn ADC on, set continuous mode
-    ADC1 -> CR1 |= 0x02000000;              // set resolution to 10 bit (not necessary)
+    ADC1 -> CR1 |= 0x01000000;              // set resolution to 10 bit (not necessary)//now it is 10 bit
     ADC1 -> SQR3 |= 0x0000016A;             // First: ch10 (PC=), Second: ch11 (PC11)
-    ADC1 -> SQR1 |= 0x00000000;             // only one conversion
+    ADC1 -> SQR1 |= 0x00000000;             // only one conversion //for what??
     ADC1 -> CR2 |= 0x00000020,              // enable interrupt
     NVIC_SetPriority(ADC_IRQn, 4);          // set interrupt priority
     NVIC_EnableIRQ(ADC_IRQn);               // enable interrupt
