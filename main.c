@@ -39,6 +39,8 @@ uint8_t greenOn = 0;                    // flag if green led is on
 uint8_t userOn = 0;                     // flag if green button is pressed
 uint8_t sending_pos = 1;                // current position in lin_data
 uint8_t size = 0;                	    // length of lin_data
+uint8_t running_cnt = 0;
+uint8_t running_st = 0;
 char lin_data [5];                      // array, where date for lin communication is stored
 
 
@@ -104,8 +106,8 @@ void USART6_IRQHandler(void)
                 {
                     case 0x18:                      	// send milliseconds
                         lin_mode = SEND_DATA;
-						size = 2;
-						tmp = milliSec;
+												size = 2;
+												tmp = milliSec;
                         lin_Send(&tmp, size, 0x18, lin_data);
                         break;
 
@@ -113,14 +115,14 @@ void USART6_IRQHandler(void)
                         lin_mode = SEND_DATA;
                         size = 4;
                         tmp = frequency_Counted;
-                        lin_Send(&tmp, size, 0x18, lin_data);
+                        lin_Send(&tmp, size, 0x28, lin_data);
                         break;
 
                     case 0x38:                      	// send keyboard
                         lin_mode = SEND_DATA;
 						size = 2;
                         tmp = new_keyboard;
-                        lin_Send(&tmp, size, 0x18, lin_data);
+                        lin_Send(&tmp, size, 0x38, lin_data);
                         break;
 
                     default:                        	// identifier not relevant
@@ -183,8 +185,7 @@ int main(void)
     char buffer_capt[32];
     char buffer_firstPoti[32];
     char buffer_secondPoti[32];
-    uint16_t running_cnt = 0;
-    uint8_t running_st = 0;
+    
 
     /*
      * loop forever
@@ -217,20 +218,22 @@ int main(void)
          * If key on keyboard pressed, light up led
          * Else display running led light
          */
-        if (new_keyboard == 0x00000000)
+        if (new_keyboard == 0x0000)
         {
             if (running_st == 0)
             {
-                led_Write(0x00000000 << (1 * running_cnt++));
+                led_Write(1 << running_cnt);
+								running_cnt++;
             }
             else
             {
-                led_Write(~(0x00000000 << (1 * running_cnt++)));
+                led_Write(~(1 << (running_cnt)));
+								running_cnt++;
             }
             running_cnt = running_cnt % 16;
             if (running_cnt == 0)
             {
-                running_st ^= running_st;
+                running_st = ~running_st;
             }
         }
         else
@@ -243,9 +246,9 @@ int main(void)
          * Print poti values on lcd display
          */
         adc_GetPotis(&firstPoti, &secondPoti);
-        sprintf(buffer_firstPoti, "First Poti: %12d", firstPoti);
+        sprintf(buffer_firstPoti, "Poti1: %3d%%", firstPoti);
         lcd_WriteString(10,130,0x0000,0xFFFF, buffer_firstPoti);
-        sprintf(buffer_secondPoti, "Second Poti: %12d", secondPoti);
+        sprintf(buffer_secondPoti, "Poti2: %3d%%", secondPoti);
         lcd_WriteString(10,170,0x0000,0xFFFF, buffer_secondPoti);
 
         /*

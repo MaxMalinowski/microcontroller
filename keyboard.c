@@ -62,7 +62,7 @@ void keyboard_Check(uint16_t old_key, uint16_t new_key)
 {
     char keyboard[16];
     short2Bitstring(new_key, keyboard);
-    lcd_WriteString(10, 190, 0x0000, 0xFFFF, keyboard);
+    lcd_WriteString(10, 90, 0x0000, 0xFFFF, keyboard);
 
     if (old_key != new_key)
     {
