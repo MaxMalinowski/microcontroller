@@ -1,44 +1,68 @@
-# Microcontroller
+# Microcontroller Source Code
 
-Source Code for the exercises of the Micocontroller class.
+This repository contains the solution for the microcontroller class.
+The source code can be found in the src directory.
+The doc directory contains documentation / a protocoll for the class.
+
 The exercises are implemented step by step and build upon each other.
+The main functionality is implemented in the main.c file. This file also contains the declaration of global variables (e.g. for timers) and also the interrupt handlers
 
-## Ex. 1
+This project was developed on the STM32F4 microcontroller discovery board and the Kail MDK-ARM IDE. If installed (windows only), just double click the .uvprojx file in the src directory to open the project.
 
-Create and setup a Project using the Keil IDE.
+Because of specialized peripherals, only until exercise 2 the source code is working.
+Nevertheless, maybe the code will someone looking for inspiration :D
 
-## Ex. 2
 
-Let the green led blink with 1 Hz when the USER button is pressed.
+The exercises solved and their functionallity follows:
 
-## Ex. 3
+## Table of Contents
 
-Trigger the LEDs on the board. 
+### Ex. 1
 
-## Ex. 4
+Start: Create and setup a Project using the Keil IDE.
 
-Trigger the display to print out strings / letters or to clean the display.
 
-## Ex. 5
+### Ex. 2
 
-Read the inputs of the keyboard and display them.
+A green led is flashing with one Hz when the user butto is pressed.
 
-## Ex. 6
 
-Use easy Timer7 as a time basis and derive different time from that.
+### Ex. 3
 
-## Ex. 7
+16 external leds can be triggered using a 16bit word. 
 
-Measure an external frequency using the timer12 peripheral and two different counting methods.
 
-## Ex. 8
+### Ex. 4
 
-Communicate with an master in a LIN network and respond to certain identifiers with corresponding messages.
+An external display can be used. Using specialized functions, the output of single letters or complet strings is possible. 
+As part of a competition, the display can be cleard in 49.2 milliseconds.
 
-## Ex. 9
 
-Read and convert analog values from a potentiometer into digital ones and display them.
+### Ex. 5
 
-## Ex. 10
+From an external 4x4 keyboard matrix, the input can be read.
+Using the functions form ex.4, the keyboard status can be printed on the display.
 
-Using the converted values form the potentiometers, control the position of a throttle.
+### Ex. 6
+
+Using  timer 7, we derive a 1 millisecond time basis.
+Better controll of time dependent tasks is now possible.
+
+### Ex. 7
+
+Using timer 12  an external frequency segnal is measured and displayed. 
+
+
+### Ex. 8
+
+The microcontroller takes the roll of a LIN slave in a LIN network. The periodically sends out identifier and the programm responses either with the current time, keyboard state or frequency, according to the identifier.
+
+
+### Ex. 9
+
+The analog signals from two potentiomerts are converted to digital percent values and displayed.
+
+
+### Ex. 10
+
+With the percent values from ex. 9, it ist now possible to create a pwm signal and controll the position of a throttle.
